@@ -230,7 +230,7 @@ class Config(object):
 		self.trainModel.selector.label = to_var(self.batch_label)
 		self.trainModel.classifier.label = to_var(self.batch_label)
 		self.optimizer.zero_grad()
-		(loss, _output), training_scores = self.trainModel()#NEW
+		(loss, _output), training_scores, logits = self.trainModel()#NEW
 		"""
 		print(_output)
 		print("^^ OUTPUT ^^")
@@ -249,7 +249,7 @@ class Config(object):
 			else:
 				self.acc_not_NA.add(prediction == self.batch_label[i])
 			self.acc_total.add(prediction == self.batch_label[i])
-		return loss.data.item(), training_scores#NEW
+		return loss.data.item(), training_scores, logits.tolist()#NEW
 
 	def test_one_step(self):
 		self.testModel.embedding.word = to_var(self.batch_word)
@@ -322,9 +322,11 @@ class Config(object):
 
 	def test_one_epoch(self):
 		test_score = []
+		test_logits = []
 		for batch in tqdm(range(int(self.test_batches))):#JN EDIT HERE; REMOVE 'floor()'
 			self.get_test_batch(batch)
-			batch_score = self.test_one_step()
+			batch_score, logits = self.test_one_step()
+			test_logits += logits.tolist()
 			test_score = test_score + batch_score
 		test_result = []
 		for i in range(len(test_score)):
@@ -356,7 +358,7 @@ class Config(object):
 		roc_auc = sklearn.metrics.auc(fpr, tpr)
 		print("ROC-AUC: ", roc_auc)
 
-		return roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score
+		return roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_logits
 
 	def test(self):
 		best_epoch = None
@@ -522,7 +524,7 @@ class Config(object):
 		best_tpr = None
 
 		train_epoch_score = []
-
+		train_epoch_logits = []
 		best_train_score = []
 		best_test_score = []
 		best_epoch = 0
@@ -537,22 +539,37 @@ class Config(object):
 			print(self.train_batches)
 			for batch in range(self.train_batches):
 				self.get_train_batch(batch)
-				loss, train_batch_score = self.train_one_step()#NEW
+				print("ffff")
+				loss, train_batch_score,logits = self.train_one_step()#NEW
+				print("uuuu")
+				train_epoch_logits += logits
+				print("kkkk")
 				train_epoch_score += train_batch_score
 				time_str = datetime.datetime.now().isoformat()
 				sys.stdout.write('Fold %d Epoch %d Step %d Time %s | Loss: %f, Neg Accuracy: %f, Pos Accuracy: %f, Total Accuracy: %f\r' % (k, epoch, batch, time_str, loss, self.acc_NA.get(), self.acc_not_NA.get(), self.acc_total.get()))
 				sys.stdout.flush()
 			if (epoch + 1) % self.test_epoch == 0:
 				self.testModel = self.trainModel
-				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score = self.test_one_epoch()
+				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_logits = self.test_one_epoch()
 				#print(scores);scores = np.concatenate(scores,axis=0)
 				total_score = train_epoch_score + test_score
+				total_logits = logits + test_logits
 				s = np.concatenate(total_score,axis=0).astype("float64");
+				l = np.concatenate(total_logits,axis=0).astype("float64");
+				print(total_logits, len(total_logits));exit(0);
+				as_p = lambda a:ctypes.cast(a.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double))
 				# CRF CODE
 				gradient = np.zeros(s.shape[0])
-				if epoch > 20:
-					lib.GetNNOutput(model_crf,ctypes.cast(s.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double)), s.shape[0]);lib.BP_API(model_crf)
-					lib.BackpropToNN(model_crf,ctypes.cast(gradient.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double)),gradient.shape[0]);os.system("mv marginals.txt marginals-epoch-%d-fold-%d.txt"%(epoch,k))
+				if 1 > 0:
+					lib.GetLogits(model_crf, as_p(l), l.shape[0]);
+					lib.GetPriorsAndDoBP(model_crf, as_p(s), 1)
+					lib.Df(model_crf, as_p(gradient), gradient.shape[0], 1)
+					print("blah")
+					lib.GetPriorsAndDoBP(model_crf, as_p(s), -1)
+					print("blah")
+					lib.Df(model_crf, as_p(gradient), gradient.shape[0], -1)
+					print("wooo!")
+					#lib.BackpropToNN(model_crf,ctypes.cast(gradient.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double)),gradient.shape[0]);os.system("mv marginals.txt marginals-epoch-%d-fold-%d.txt"%(epoch,k))
 				# END CRF CODE
 				#print(train_epoch_score)
 				#print("^^ TRAIN EPOCH SCORE ^^")

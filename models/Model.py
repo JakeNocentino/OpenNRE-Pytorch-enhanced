@@ -22,9 +22,8 @@ class Model(nn.Module):
 		embedding = self.embedding()
 		sen_embedding = self.encoder(embedding)
 		logits = self.selector(sen_embedding)
-
 		score = F.softmax(logits,1)
-		return self.classifier(logits), list(score.data.cpu().numpy())
+		return self.classifier(logits), list(score.data.cpu().numpy()), logits
 		
 	def test(self):
 		embedding = self.embedding()
