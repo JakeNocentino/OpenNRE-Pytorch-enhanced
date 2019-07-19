@@ -249,7 +249,7 @@ class Config(object):
 			else:
 				self.acc_not_NA.add(prediction == self.batch_label[i])
 			self.acc_total.add(prediction == self.batch_label[i])
-		return loss.data.item(), training_scores, logits.tolist()#NEW
+		return loss.data.item(), training_scores, logits#NEW
 
 	def test_one_step(self):
 		self.testModel.embedding.word = to_var(self.batch_word)
@@ -326,7 +326,7 @@ class Config(object):
 		for batch in tqdm(range(int(self.test_batches))):#JN EDIT HERE; REMOVE 'floor()'
 			self.get_test_batch(batch)
 			batch_score, logits = self.test_one_step()
-			test_logits += logits.tolist()
+			test_logits += logits
 			test_score = test_score + batch_score
 		test_result = []
 		for i in range(len(test_score)):
@@ -539,11 +539,8 @@ class Config(object):
 			print(self.train_batches)
 			for batch in range(self.train_batches):
 				self.get_train_batch(batch)
-				print("ffff")
 				loss, train_batch_score,logits = self.train_one_step()#NEW
-				print("uuuu")
 				train_epoch_logits += logits
-				print("kkkk")
 				train_epoch_score += train_batch_score
 				time_str = datetime.datetime.now().isoformat()
 				sys.stdout.write('Fold %d Epoch %d Step %d Time %s | Loss: %f, Neg Accuracy: %f, Pos Accuracy: %f, Total Accuracy: %f\r' % (k, epoch, batch, time_str, loss, self.acc_NA.get(), self.acc_not_NA.get(), self.acc_total.get()))

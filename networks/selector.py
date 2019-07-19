@@ -120,4 +120,4 @@ class Average(Selector):
 		logits = self.get_logits(stack_repre)
 		#score = F.softmax(logits, 1)
 		score = F.softmax(logits,1)
-		return list(score.data.cpu().numpy()), logits
+		return list(score.data.cpu().numpy()), list(logits.data.cpu().numpy())
