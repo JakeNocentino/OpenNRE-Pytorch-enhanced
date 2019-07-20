@@ -230,7 +230,7 @@ class Config(object):
 		self.trainModel.selector.label = to_var(self.batch_label)
 		self.trainModel.classifier.label = to_var(self.batch_label)
 		self.optimizer.zero_grad()
-		(loss, _output), training_scores, logits = self.trainModel()#NEW
+		(loss, _output), training_scores, train_logits = self.trainModel()#NEW
 		"""
 		print(_output)
 		print("^^ OUTPUT ^^")
@@ -249,7 +249,7 @@ class Config(object):
 			else:
 				self.acc_not_NA.add(prediction == self.batch_label[i])
 			self.acc_total.add(prediction == self.batch_label[i])
-		return loss.data.item(), training_scores, logits#NEW
+		return loss.data.item(), training_scores, train_logits#NEW
 
 	def test_one_step(self):
 		self.testModel.embedding.word = to_var(self.batch_word)
@@ -508,6 +508,7 @@ class Config(object):
 	def train_each_fold(self, k, lib):
 		# CRF MODEL
 		#unspeakable evil
+
 		nums = [b"0",b"1",b"2",b"3",b"4",b"5",b"6",b"7",b"8",b"9"]
 		param1 = sb(b"0.001")
 		param2 = sb(r+b"fold-"+nums[k]+b"-edges-ALT.txt")
@@ -535,12 +536,13 @@ class Config(object):
 			self.acc_not_NA.clear()
 			self.acc_total.clear()
 			train_epoch_score.clear()
+			train_epoch_logits.clear()
 			#np.random.shuffle(self.train_order)
 			print(self.train_batches)
 			for batch in range(self.train_batches):
 				self.get_train_batch(batch)
-				loss, train_batch_score,logits = self.train_one_step()#NEW
-				train_epoch_logits += logits
+				loss, train_batch_score, train_batch_logits = self.train_one_step()#NEW
+				train_epoch_logits += train_batch_logits
 				train_epoch_score += train_batch_score
 				time_str = datetime.datetime.now().isoformat()
 				sys.stdout.write('Fold %d Epoch %d Step %d Time %s | Loss: %f, Neg Accuracy: %f, Pos Accuracy: %f, Total Accuracy: %f\r' % (k, epoch, batch, time_str, loss, self.acc_NA.get(), self.acc_not_NA.get(), self.acc_total.get()))
@@ -550,7 +552,7 @@ class Config(object):
 				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_logits = self.test_one_epoch()
 				#print(scores);scores = np.concatenate(scores,axis=0)
 				total_score = train_epoch_score + test_score
-				total_logits = logits + test_logits
+				total_logits = train_epoch_logits + test_logits
 				s = np.concatenate(total_score,axis=0).astype("float64");
 				l = np.concatenate(total_logits,axis=0).astype("float64");
 				print(total_logits, len(total_logits));exit(0);
