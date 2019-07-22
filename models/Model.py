@@ -20,12 +20,12 @@ class Model(nn.Module):
 
 	def forward(self):
 		embedding = self.embedding()
-		sen_embedding = self.encoder(embedding)
+		sen_embedding, x = self.encoder(embedding)
 		logits = self.selector(sen_embedding)
 		score = F.softmax(logits,1)
-		return self.classifier(logits), list(score.data.cpu().numpy()), list(logits.data.cpu().numpy())
+		return self.classifier(logits), list(score.data.cpu().numpy()), list(x.data.cpu().numpy())
 		
 	def test(self):
 		embedding = self.embedding()
-		sen_embedding = self.encoder(embedding)
-		return self.selector.test(sen_embedding)
+		sen_embedding, x = self.encoder(embedding)
+		return self.selector.test(sen_embedding), list(x.data.cpu().numpy())

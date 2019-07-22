@@ -20,13 +20,8 @@ ll = ctypes.cdll.LoadLibrary
 lib = ll('../../experiment/OpenCRF/HardcodedPotentials/crflib.so')
 lib.InitializeCRF.argtypes = [ctypes.c_char_p for i in range(5)]
 lib.InitializeCRF.restype = ctypes.c_void_p
-lib.GetLogits.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_double), ctypes.c_int]
-lib.GetLogits.restype = None
-lib.GetPriorsAndDoBP.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_double), ctypes.c_int]
-lib.GetPriorsAndDoBP.restype = None
-lib.Df.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int]
-lib.Df.restype = None
-
+lib.Gradient.argtypes = [ctypes.c_void_p] + [ctypes.POINTER(ctypes.c_double) for i in range(4)] + [ctypes.c_int]
+lib.Gradient.restype = None
 #lib.train.argtypes = [ctypes.c_void_p]
 #lib.train.restype = None
 #lib.GetNNOutput.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_double), ctypes.c_int]
