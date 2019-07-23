@@ -14,6 +14,7 @@ import statistics
 import ctypes
 
 # START
+"""
 sb = ctypes.create_string_buffer
 r = b"/home/jakob/experiment/OpenCRF/HardcodedPotentials/bar/rawdata/"
 ll = ctypes.cdll.LoadLibrary
@@ -26,6 +27,7 @@ lib.GetPriorsAndDoBP.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_double
 lib.GetPriorsAndDoBP.restype = None
 lib.Df.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int]
 lib.Df.restype = None
+"""
 
 #lib.train.argtypes = [ctypes.c_void_p]
 #lib.train.restype = None
@@ -76,7 +78,7 @@ for k in range(k_folds):
 	con.load_k_fold_test_data(k)
 	con.set_train_model(model[args.model_name])
 	#con.set_test_model(model[args.model_name])
-	roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, scores = con.train_each_fold(k, lib)
+	roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, scores, ks = con.train_each_fold(k)#, lib)
 	roc_auc_all.append(roc_auc)
 	pr_auc_all.append(pr_auc)
 	#print(scores)

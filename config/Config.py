@@ -54,7 +54,7 @@ class Config(object):
 		self.pos_num = 2 * self.max_length
 		self.num_classes = 2 # negative: 0, positive: 1
 		self.k_folds = 10 # For 10-fold cross-validation
-		self.hidden_size = 230 #230
+		self.hidden_size = 256 #230
 		self.pos_size = 5
 		self.max_epoch =50
 		self.opt_method = 'SGD'
@@ -68,10 +68,10 @@ class Config(object):
 		self.save_epoch = 1
 		self.test_epoch = 1
 		self.test_k_fold = 1 # test and store auc of all k-folds at an iteration of 1
-		self.pretrain_model = None
+		self.pretrain_model = self.checkpoint_dir + '/PCNN_AVE-26'
 		self.trainModel = None
 		self.testModel = None
-		self.batch_size = 160 # try lower batch size for higher AUC; normally 160
+		self.batch_size = 7402 # try lower batch size for higher AUC; normally 160
 		self.word_size = 50
 		self.window_size = 3
 		self.epoch_range = None
@@ -230,7 +230,7 @@ class Config(object):
 		self.trainModel.selector.label = to_var(self.batch_label)
 		self.trainModel.classifier.label = to_var(self.batch_label)
 		self.optimizer.zero_grad()
-		(loss, _output), training_scores, train_logits = self.trainModel()#NEW
+		(loss, _output), training_scores, ks = self.trainModel()#NEW
 		"""
 		print(_output)
 		print("^^ OUTPUT ^^")
@@ -249,7 +249,7 @@ class Config(object):
 			else:
 				self.acc_not_NA.add(prediction == self.batch_label[i])
 			self.acc_total.add(prediction == self.batch_label[i])
-		return loss.data.item(), training_scores, train_logits#NEW
+		return loss.data.item(), training_scores, ks
 
 	def test_one_step(self):
 		self.testModel.embedding.word = to_var(self.batch_word)
@@ -322,12 +322,21 @@ class Config(object):
 
 	def test_one_epoch(self):
 		test_score = []
-		test_logits = []
+		test_ks = []
 		for batch in tqdm(range(int(self.test_batches))):#JN EDIT HERE; REMOVE 'floor()'
 			self.get_test_batch(batch)
-			batch_score, logits = self.test_one_step()
-			test_logits += logits
+			(batch_score, _), ks = self.test_one_step()
+			print(batch_score)
+			print(len(batch_score))
+			print('BATCH SCHORES 0\n\n\n\n')
+			#print(batch_score[1])
+			#print('BATCH SCORES 1\n\n\n\n')
+			#print(ks)
+			print(len(ks))
+			print(len(ks[0]))
+			print('KS\n\n\n\n')
 			test_score = test_score + batch_score
+			test_ks = test_ks + ks
 		test_result = []
 		for i in range(len(test_score)):
 			for j in range(1, len(test_score[i])):
@@ -358,7 +367,7 @@ class Config(object):
 		roc_auc = sklearn.metrics.auc(fpr, tpr)
 		print("ROC-AUC: ", roc_auc)
 
-		return roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_logits
+		return roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_ks
 
 	def test(self):
 		best_epoch = None
@@ -505,10 +514,11 @@ class Config(object):
 		print('Finish storing...')
 
 	""" An alternate method for k-folds cross-validation. May use this or train_k_folds, depending on which one works. """
-	def train_each_fold(self, k, lib):
+	def train_each_fold(self, k):#, lib):
 		# CRF MODEL
 		#unspeakable evil
 
+		"""
 		nums = [b"0",b"1",b"2",b"3",b"4",b"5",b"6",b"7",b"8",b"9"]
 		param1 = sb(b"0.001")
 		param2 = sb(r+b"fold-"+nums[k]+b"-edges-ALT.txt")
@@ -516,6 +526,7 @@ class Config(object):
 		param4 = sb(b"model-fold-"+nums[k]+b".txt")
 		param5 = sb(r+b"maps/map"+nums[k]+b".txt")
 		model_crf = lib.InitializeCRF(param1,param2,param3,param4,param5)
+		"""
 
 		best_pr_auc = 0.0
 		best_roc_auc = 0.0
@@ -525,10 +536,11 @@ class Config(object):
 		best_tpr = None
 
 		train_epoch_score = []
-		train_epoch_logits = []
 		best_train_score = []
 		best_test_score = []
 		best_epoch = 0
+
+		train_epoch_ks = []
 
 		print('Fold ' + str(k) + ' starts...\n')
 		for epoch in range(self.max_epoch):
@@ -536,29 +548,30 @@ class Config(object):
 			self.acc_not_NA.clear()
 			self.acc_total.clear()
 			train_epoch_score.clear()
-			train_epoch_logits.clear()
+			train_epoch_ks.clear()
 			#np.random.shuffle(self.train_order)
 			print(self.train_batches)
 			for batch in range(self.train_batches):
 				self.get_train_batch(batch)
-				loss, train_batch_score, train_batch_logits = self.train_one_step()#NEW
-				train_epoch_logits += train_batch_logits
+				loss, train_batch_score, train_batch_ks = self.train_one_step()#NEW
+				train_epoch_ks += train_batch_ks
 				train_epoch_score += train_batch_score
 				time_str = datetime.datetime.now().isoformat()
 				sys.stdout.write('Fold %d Epoch %d Step %d Time %s | Loss: %f, Neg Accuracy: %f, Pos Accuracy: %f, Total Accuracy: %f\r' % (k, epoch, batch, time_str, loss, self.acc_NA.get(), self.acc_not_NA.get(), self.acc_total.get()))
 				sys.stdout.flush()
 			if (epoch + 1) % self.test_epoch == 0:
 				self.testModel = self.trainModel
-				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_logits = self.test_one_epoch()
+				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_ks = self.test_one_epoch()
 				#print(scores);scores = np.concatenate(scores,axis=0)
 				total_score = train_epoch_score + test_score
-				total_logits = train_epoch_logits + test_logits
+				total_ks = train_epoch_ks + test_ks
 				s = np.concatenate(total_score,axis=0).astype("float64");
-				l = np.concatenate(total_logits,axis=0).astype("float64");
-				print(total_logits, len(total_logits));exit(0);
+				l = np.concatenate(total_ks,axis=0).astype("float64");
+				print(total_ks, len(total_ks), len(total_ks[0]))
 				as_p = lambda a:ctypes.cast(a.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double))
 				# CRF CODE
 				gradient = np.zeros(s.shape[0])
+				"""
 				if 1 > 0:
 					lib.GetLogits(model_crf, as_p(l), l.shape[0]);
 					lib.GetPriorsAndDoBP(model_crf, as_p(s), 1)
@@ -568,6 +581,8 @@ class Config(object):
 					print("blah")
 					lib.Df(model_crf, as_p(gradient), gradient.shape[0], -1)
 					print("wooo!")
+
+				"""
 					#lib.BackpropToNN(model_crf,ctypes.cast(gradient.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double)),gradient.shape[0]);os.system("mv marginals.txt marginals-epoch-%d-fold-%d.txt"%(epoch,k))
 				# END CRF CODE
 				#print(train_epoch_score)

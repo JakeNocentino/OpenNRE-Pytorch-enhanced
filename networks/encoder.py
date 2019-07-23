@@ -55,7 +55,7 @@ class PCNN(nn.Module):
 		embedding = torch.unsqueeze(embedding, dim = 1)
 		x = self.cnn(embedding)
 		x = self.pooling(x, self.mask, self.config.hidden_size)
-		return self.activation(x)
+		return self.activation(x), list(x.data.cpu().numpy())
 		#check shape of x and output
 
 class CNN(nn.Module):
