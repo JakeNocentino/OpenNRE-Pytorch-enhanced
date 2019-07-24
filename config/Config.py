@@ -243,13 +243,22 @@ class Config(object):
 	calculated by the conditional random field.
 	"""
 	def train_one_step_part2(self, h_grad, w_grad, loss, _output):
-		"""
-		GRADIENT GOES HERE
-		"""
+		# format w properly into 2 x K numpy array
+		w_grad_new = []
+		for i in range(2):
+			l = []
+			for j in range(i, len(w_grad), 2):
+				l.append(j)
+			w_grad_new.append(l)
+
+		# replace w gradient with new gradient calculated
+		w_grad_numpy = np.array(w_grad_new)
+		w_grad_tensor = torch.from_numpy(w_grad_numpy)
 		loss.backward()
-		for name, param in self.trainModel:
-			if name == 'selector.relation_matrix.matrix':
-				param.grad = w_grad
+		for name, param in self.trainModel.named_parameters():
+			if name == 'selector.relation_matrix.weight':
+				param.grad = w_grad_tensor
+
 		self.optimizer.step()
 		for i, prediction in enumerate(_output):
 			if self.batch_label[i] == 0:
@@ -266,9 +275,6 @@ class Config(object):
 		self.testModel.encoder.mask = to_var(self.batch_mask)
 		self.testModel.selector.scope = self.batch_scope
 		return self.testModel.test()
-
-	""" EXPERIMENTAL FUNCTION """
-	# def train_one_step_score(self):
 
 
 	def train(self):
@@ -522,7 +528,7 @@ class Config(object):
 				train_epoch_logits += train_h_w_logits[2]
 				train_epoch_score += train_batch_score
 				time_str = datetime.datetime.now().isoformat()
-				sys.stdout.write('Fold %d Epoch %d Step %d Time %s | Loss: %f, Neg Accuracy: %f, Pos Accuracy: %f, Total Accuracy: %f\r' % (k, epoch, batch, time_str, loss, self.acc_NA.get(), self.acc_not_NA.get(), self.acc_total.get()))
+				sys.stdout.write('Fold %d Epoch %d Step %d Time %s | Loss: %f, Neg Accuracy: %f, Pos Accuracy: %f, Total Accuracy: %f\r' % (k, epoch, batch, time_str, loss_output[0].data.item(), self.acc_NA.get(), self.acc_not_NA.get(), self.acc_total.get()))
 				sys.stdout.flush()
 			if (epoch + 1) % self.test_epoch == 0:
 				self.testModel = self.trainModel
