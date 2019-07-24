@@ -236,6 +236,14 @@ class Config(object):
 		self.trainModel.classifier.label = to_var(self.batch_label)
 		self.optimizer.zero_grad()
 		(loss, _output), training_scores, h_w_logits = self.trainModel()
+
+		for i, prediction in enumerate(_output):
+			if self.batch_label[i] == 0:
+				self.acc_NA.add(prediction == self.batch_label[i])
+			else:
+				self.acc_not_NA.add(prediction == self.batch_label[i])
+			self.acc_total.add(prediction == self.batch_label[i])
+
 		return (loss, _output), training_scores, h_w_logits
 
 	"""
@@ -260,12 +268,6 @@ class Config(object):
 				param.grad = w_grad_var
 
 		self.optimizer.step()
-		for i, prediction in enumerate(_output):
-			if self.batch_label[i] == 0:
-				self.acc_NA.add(prediction == self.batch_label[i])
-			else:
-				self.acc_not_NA.add(prediction == self.batch_label[i])
-			self.acc_total.add(prediction == self.batch_label[i])
 
 
 	def test_one_step(self):
@@ -551,7 +553,7 @@ class Config(object):
 				#print(wgradient.tolist());exit(0)
 
 				# END CRF CODE AND USE GRADIENTS TO BACKPROPAGATE
-				self.train_one_step_part2(hgradient, wgradient, loss_output[0], loss_output[1])
+				self.train_one_step_part2(hgradient.astype('float32'), wgradient.astype('float32'), loss_output[0], loss_output[1])
 
 				if roc_auc > best_roc_auc:
 					best_pr_auc = pr_auc
