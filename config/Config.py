@@ -232,16 +232,12 @@ class Config(object):
 		self.trainModel.classifier.label = to_var(self.batch_label)
 		self.optimizer.zero_grad()
 		(loss, _output), training_scores, h_w_logits = self.trainModel()#NEW
+		
 		"""
-		print(_output)
-		print("^^ OUTPUT ^^")
-		print(loss)
-		print("^^ LOSS ^^")
-		print(training_scores)
-		print("^^ TRAINING SCORES ^^")
+		GRADIENT GOES HERE
 		"""
 
-		# print("OUTPUT: {}".format(_output))
+
 		loss.backward()
 		self.optimizer.step()
 		for i, prediction in enumerate(_output):

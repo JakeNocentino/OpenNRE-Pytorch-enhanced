@@ -1,0 +1,1235 @@
+FactorGraph.cpp: In member function ‘virtual void FactorNode::MaxSumPropagation(double*, bool)’:
+FactorGraph.cpp:143:84: error: conversion from ‘std::map<std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int> >}’ to non-scalar type ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ requested
+    std::map<std::tuple<char*,char*>,int>::iterator it = this->potentialMapPtr->find(edgePair0);
+                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+FactorGraph.cpp:144:10: error: no match for ‘operator!=’ (operand types are ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ and ‘std::map<std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int> >}’)
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+       ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/7/map:60:0,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_tree.h:319:7: note: candidate: bool std::_Rb_tree_iterator<_Tp>::operator!=(const _Self&) const [with _Tp = std::pair<const std::tuple<char*, char*>, int>; std::_Rb_tree_iterator<_Tp>::_Self = std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >]
+       operator!=(const _Self& __x) const _GLIBCXX_NOEXCEPT
+       ^~~~~~~~
+/usr/include/c++/7/bits/stl_tree.h:319:7: note:   no known conversion for argument 1 from ‘std::map<std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int> >}’ to ‘const _Self& {aka const std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >&}’
+In file included from /usr/include/c++/7/map:62:0,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_multimap.h:1083:5: note: candidate: template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator!=(const std::multimap<_Key, _Tp, _Compare, _Alloc>&, const std::multimap<_Key, _Tp, _Compare, _Alloc>&)
+     operator!=(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_multimap.h:1083:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::multimap<_Key, _Tp, _Compare, _Alloc>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/map:61:0,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_map.h:1418:5: note: candidate: template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator!=(const std::map<_Key, _Tp, _Compare, _Alloc>&, const std::map<_Key, _Tp, _Compare, _Alloc>&)
+     operator!=(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_map.h:1418:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::map<_Key, _Tp, _Compare, _Alloc>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1423:5: note: candidate: template<class ... _TElements, class ... _UElements> constexpr bool std::operator!=(const std::tuple<_Tps ...>&, const std::tuple<_Args2 ...>&)
+     operator!=(const tuple<_TElements...>& __t,
+     ^~~~~~~~
+/usr/include/c++/7/tuple:1423:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::tuple<_Tps ...>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/tuple:39:0,
+                 from /usr/include/c++/7/bits/stl_map.h:63,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/array:257:5: note: candidate: template<class _Tp, long unsigned int _Nm> bool std::operator!=(const std::array<_Tp, _Nm>&, const std::array<_Tp, _Nm>&)
+     operator!=(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+     ^~~~~~~~
+/usr/include/c++/7/array:257:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::array<_Tp, _Nm>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/map:60:0,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_tree.h:1553:5: note: candidate: template<class _Key, class _Val, class _KeyOfValue, class _Compare, class _Alloc> bool std::operator!=(const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>&, const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>&)
+     operator!=(const _Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_tree.h:1553:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/map:60:0,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_tree.h:412:5: note: candidate: template<class _Val> bool std::operator!=(const std::_Rb_tree_iterator<_Tp>&, const std::_Rb_tree_const_iterator<_Val>&)
+     operator!=(const _Rb_tree_iterator<_Val>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_tree.h:412:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int> >}’ is not derived from ‘const std::_Rb_tree_const_iterator<_Val>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/vector:64:0,
+                 from Util.h:4,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_vector.h:1625:5: note: candidate: template<class _Tp, class _Alloc> bool std::operator!=(const std::vector<_Tp, _Alloc>&, const std::vector<_Tp, _Alloc>&)
+     operator!=(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_vector.h:1625:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::vector<_Tp, _Alloc>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/string:52:0,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/basic_string.h:6081:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> bool std::operator!=(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const _CharT*)
+     operator!=(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/7/bits/basic_string.h:6081:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/string:52:0,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/basic_string.h:6069:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> bool std::operator!=(const _CharT*, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator!=(const _CharT* __lhs,
+     ^~~~~~~~
+/usr/include/c++/7/bits/basic_string.h:6069:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   mismatched types ‘const _CharT*’ and ‘std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/string:52:0,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/basic_string.h:6056:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> bool std::operator!=(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator!=(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/7/bits/basic_string.h:6056:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/string:41:0,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/allocator.h:164:5: note: candidate: template<class _Tp> bool std::operator!=(const std::allocator<_CharT>&, const std::allocator<_CharT>&)
+     operator!=(const allocator<_Tp>&, const allocator<_Tp>&)
+     ^~~~~~~~
+/usr/include/c++/7/bits/allocator.h:164:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::allocator<_CharT>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/string:41:0,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/allocator.h:158:5: note: candidate: template<class _T1, class _T2> bool std::operator!=(const std::allocator<_CharT>&, const std::allocator<_T2>&)
+     operator!=(const allocator<_T1>&, const allocator<_T2>&)
+     ^~~~~~~~
+/usr/include/c++/7/bits/allocator.h:158:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::allocator<_CharT>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/bits/char_traits.h:40:0,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/postypes.h:221:5: note: candidate: template<class _StateT> bool std::operator!=(const std::fpos<_StateT>&, const std::fpos<_StateT>&)
+     operator!=(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
+     ^~~~~~~~
+/usr/include/c++/7/bits/postypes.h:221:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::fpos<_StateT>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_iterator.h:1139:5: note: candidate: template<class _Iterator> bool std::operator!=(const std::move_iterator<_IteratorL>&, const std::move_iterator<_IteratorL>&)
+     operator!=(const move_iterator<_Iterator>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_iterator.h:1139:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::move_iterator<_IteratorL>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_iterator.h:1133:5: note: candidate: template<class _IteratorL, class _IteratorR> bool std::operator!=(const std::move_iterator<_IteratorL>&, const std::move_iterator<_IteratorR>&)
+     operator!=(const move_iterator<_IteratorL>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_iterator.h:1133:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::move_iterator<_IteratorL>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_iterator.h:352:5: note: candidate: template<class _IteratorL, class _IteratorR> bool std::operator!=(const std::reverse_iterator<_Iterator>&, const std::reverse_iterator<_IteratorR>&)
+     operator!=(const reverse_iterator<_IteratorL>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_iterator.h:352:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_iterator.h:314:5: note: candidate: template<class _Iterator> bool std::operator!=(const std::reverse_iterator<_Iterator>&, const std::reverse_iterator<_Iterator>&)
+     operator!=(const reverse_iterator<_Iterator>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_iterator.h:314:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:64:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_pair.h:461:5: note: candidate: template<class _T1, class _T2> constexpr bool std::operator!=(const std::pair<_T1, _T2>&, const std::pair<_T1, _T2>&)
+     operator!=(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_pair.h:461:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::pair<_T1, _T2>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/x86_64-linux-gnu/c++/7/bits/c++allocator.h:33:0,
+                 from /usr/include/c++/7/bits/allocator.h:46,
+                 from /usr/include/c++/7/string:41,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/ext/new_allocator.h:160:5: note: candidate: template<class _Tp> bool __gnu_cxx::operator!=(const __gnu_cxx::new_allocator<_Tp>&, const __gnu_cxx::new_allocator<_Tp>&)
+     operator!=(const new_allocator<_Tp>&, const new_allocator<_Tp>&)
+     ^~~~~~~~
+/usr/include/c++/7/ext/new_allocator.h:160:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const __gnu_cxx::new_allocator<_Tp>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_iterator.h:883:5: note: candidate: template<class _Iterator, class _Container> bool __gnu_cxx::operator!=(const __gnu_cxx::__normal_iterator<_Iterator, _Container>&, const __gnu_cxx::__normal_iterator<_Iterator, _Container>&)
+     operator!=(const __normal_iterator<_Iterator, _Container>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_iterator.h:883:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const __gnu_cxx::__normal_iterator<_Iterator, _Container>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_iterator.h:876:5: note: candidate: template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator!=(const __gnu_cxx::__normal_iterator<_IteratorL, _Container>&, const __gnu_cxx::__normal_iterator<_IteratorR, _Container>&)
+     operator!=(const __normal_iterator<_IteratorL, _Container>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_iterator.h:876:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:144:40: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const __gnu_cxx::__normal_iterator<_IteratorL, _Container>’
+    if(it != this->potentialMapPtr->end()) cat = it->second;
+                                        ^
+FactorGraph.cpp: In member function ‘void FactorGraph::CalculateMarginal()’:
+FactorGraph.cpp:368:175: error: no matching function for call to ‘std::tuple<char*, char*>::tuple(std::__cxx11::string&, std::__cxx11::string&)’
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1203:18: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && (! _ImplicitlyMoveConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, std::pair<_U1, _U2>&&)
+         explicit tuple(allocator_arg_t __tag, const _Alloc& __a,
+                  ^~~~~
+/usr/include/c++/7/tuple:1203:18: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1193:9: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && _ImplicitlyMoveConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, std::pair<_U1, _U2>&&)
+         tuple(allocator_arg_t __tag, const _Alloc& __a, pair<_U1, _U2>&& __in)
+         ^~~~~
+/usr/include/c++/7/tuple:1193:9: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1183:18: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && (! _ImplicitlyConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const std::pair<_U1, _U2>&)
+         explicit tuple(allocator_arg_t __tag, const _Alloc& __a,
+                  ^~~~~
+/usr/include/c++/7/tuple:1183:18: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1173:9: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && _ImplicitlyConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const std::pair<_U1, _U2>&)
+         tuple(allocator_arg_t __tag, const _Alloc& __a,
+         ^~~~~
+/usr/include/c++/7/tuple:1173:9: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1162:11: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && (! _ImplicitlyMoveConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, std::tuple<_U1, _U2>&&)
+  explicit tuple(allocator_arg_t __tag, const _Alloc& __a,
+           ^~~~~
+/usr/include/c++/7/tuple:1162:11: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1152:2: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && _ImplicitlyMoveConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, std::tuple<_U1, _U2>&&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a, tuple<_U1, _U2>&& __in)
+  ^~~~~
+/usr/include/c++/7/tuple:1152:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1140:11: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && (! _ImplicitlyConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const std::tuple<_U1, _U2>&)
+  explicit tuple(allocator_arg_t __tag, const _Alloc& __a,
+           ^~~~~
+/usr/include/c++/7/tuple:1140:11: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1128:2: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && _ImplicitlyConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const std::tuple<_U1, _U2>&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a,
+  ^~~~~
+/usr/include/c++/7/tuple:1128:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1119:2: note: candidate: template<class _Alloc> std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, std::tuple<_T1, _T2>&&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a, tuple&& __in)
+  ^~~~~
+/usr/include/c++/7/tuple:1119:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1115:2: note: candidate: template<class _Alloc> std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const std::tuple<_T1, _T2>&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a, const tuple& __in)
+  ^~~~~
+/usr/include/c++/7/tuple:1115:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1109:11: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && (! _ImplicitlyMoveConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, _U1&&, _U2&&)
+  explicit tuple(allocator_arg_t __tag, const _Alloc& __a,
+           ^~~~~
+/usr/include/c++/7/tuple:1109:11: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 4 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1099:2: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && _ImplicitlyMoveConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, _U1&&, _U2&&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a, _U1&& __a1, _U2&& __a2)
+  ^~~~~
+/usr/include/c++/7/tuple:1099:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 4 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1089:11: note: candidate: template<class _Alloc, class _Dummy, typename std::enable_if<(std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ConstructibleTuple<char*, char*>() && (! std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ImplicitlyConvertibleTuple<char*, char*>())), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const _T1&, const _T2&)
+  explicit tuple(allocator_arg_t __tag, const _Alloc& __a,
+           ^~~~~
+/usr/include/c++/7/tuple:1089:11: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 4 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1077:2: note: candidate: template<class _Alloc, class _Dummy, typename std::enable_if<(std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ConstructibleTuple<char*, char*>() && std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ImplicitlyConvertibleTuple<char*, char*>()), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const _T1&, const _T2&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a,
+  ^~~~~
+/usr/include/c++/7/tuple:1077:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 4 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1066:2: note: candidate: template<class _Alloc> std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a)
+  ^~~~~
+/usr/include/c++/7/tuple:1066:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:110: note:   cannot convert ‘((VariableNode*)(((FactorGraph*)this)->FactorGraph::factor_node + ((sizetype)(((long unsigned int)i) * 144)))->FactorNode::<anonymous>.Node::neighbor.std::vector<Node*>::operator[](0))->VariableNode::nodename’ (type ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’) to type ‘std::allocator_arg_t’
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1059:28: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && (! _ImplicitlyMoveConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(std::pair<_U1, _U2>&&)
+         explicit constexpr tuple(pair<_U1, _U2>&& __in)
+                            ^~~~~
+/usr/include/c++/7/tuple:1059:28: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘std::pair<_T1, _T2>’
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1049:19: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && _ImplicitlyMoveConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(std::pair<_U1, _U2>&&)
+         constexpr tuple(pair<_U1, _U2>&& __in)
+                   ^~~~~
+/usr/include/c++/7/tuple:1049:19: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘std::pair<_T1, _T2>’
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1040:28: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && (! _ImplicitlyConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(const std::pair<_U1, _U2>&)
+         explicit constexpr tuple(const pair<_U1, _U2>& __in)
+                            ^~~~~
+/usr/include/c++/7/tuple:1040:28: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘const std::pair<_T1, _T2>’
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1031:19: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && _ImplicitlyConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(const std::pair<_U1, _U2>&)
+         constexpr tuple(const pair<_U1, _U2>& __in)
+                   ^~~~~
+/usr/include/c++/7/tuple:1031:19: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘const std::pair<_T1, _T2>’
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1022:28: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && (! _ImplicitlyMoveConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(std::tuple<_U1, _U2>&&)
+         explicit constexpr tuple(tuple<_U1, _U2>&& __in)
+                            ^~~~~
+/usr/include/c++/7/tuple:1022:28: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘std::tuple<_T1, _T2>’
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1013:19: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && _ImplicitlyMoveConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(std::tuple<_U1, _U2>&&)
+         constexpr tuple(tuple<_U1, _U2>&& __in)
+                   ^~~~~
+/usr/include/c++/7/tuple:1013:19: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘std::tuple<_T1, _T2>’
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1004:28: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && (! _ImplicitlyConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(const std::tuple<_U1, _U2>&)
+         explicit constexpr tuple(const tuple<_U1, _U2>& __in)
+                            ^~~~~
+/usr/include/c++/7/tuple:1004:28: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘const std::tuple<_T1, _T2>’
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:995:19: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && _ImplicitlyConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(const std::tuple<_U1, _U2>&)
+         constexpr tuple(const tuple<_U1, _U2>& __in)
+                   ^~~~~
+/usr/include/c++/7/tuple:995:19: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘const std::tuple<_T1, _T2>’
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:987:17: note: candidate: constexpr std::tuple<_T1, _T2>::tuple(std::tuple<_T1, _T2>&&) [with _T1 = char*; _T2 = char*]
+       constexpr tuple(tuple&&) = default;
+                 ^~~~~
+/usr/include/c++/7/tuple:987:17: note:   candidate expects 1 argument, 2 provided
+/usr/include/c++/7/tuple:985:17: note: candidate: constexpr std::tuple<_T1, _T2>::tuple(const std::tuple<_T1, _T2>&) [with _T1 = char*; _T2 = char*]
+       constexpr tuple(const tuple&) = default;
+                 ^~~~~
+/usr/include/c++/7/tuple:985:17: note:   candidate expects 1 argument, 2 provided
+/usr/include/c++/7/tuple:982:28: note: candidate: template<class _U1, class _U2, typename std::enable_if<((_MoveConstructibleTuple<_U1, _U2>() && (! _ImplicitlyMoveConvertibleTuple<_U1, _U2>())) && (! std::is_same<typename std::decay<_Tp>::type, std::allocator_arg_t>::value)), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(_U1&&, _U2&&)
+         explicit constexpr tuple(_U1&& __a1, _U2&& __a2)
+                            ^~~~~
+/usr/include/c++/7/tuple:982:28: note:   template argument deduction/substitution failed:
+/usr/include/c++/7/tuple:981:16: error: no type named ‘type’ in ‘struct std::enable_if<false, bool>’
+  bool>::type = false>
+                ^~~~~
+/usr/include/c++/7/tuple:981:16: note: invalid template non-type parameter
+/usr/include/c++/7/tuple:971:19: note: candidate: template<class _U1, class _U2, typename std::enable_if<((_MoveConstructibleTuple<_U1, _U2>() && _ImplicitlyMoveConvertibleTuple<_U1, _U2>()) && (! std::is_same<typename std::decay<_Tp>::type, std::allocator_arg_t>::value)), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(_U1&&, _U2&&)
+         constexpr tuple(_U1&& __a1, _U2&& __a2)
+                   ^~~~~
+/usr/include/c++/7/tuple:971:19: note:   template argument deduction/substitution failed:
+/usr/include/c++/7/tuple:970:16: error: no type named ‘type’ in ‘struct std::enable_if<false, bool>’
+  bool>::type = true>
+                ^~~~
+/usr/include/c++/7/tuple:970:16: note: invalid template non-type parameter
+/usr/include/c++/7/tuple:956:28: note: candidate: template<class _Dummy, typename std::enable_if<(std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ConstructibleTuple<char*, char*>() && (! std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ImplicitlyConvertibleTuple<char*, char*>())), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(const _T1&, const _T2&)
+         explicit constexpr tuple(const _T1& __a1, const _T2& __a2)
+                            ^~~~~
+/usr/include/c++/7/tuple:956:28: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:110: note:   cannot convert ‘((VariableNode*)(((FactorGraph*)this)->FactorGraph::factor_node + ((sizetype)(((long unsigned int)i) * 144)))->FactorNode::<anonymous>.Node::neighbor.std::vector<Node*>::operator[](0))->VariableNode::nodename’ (type ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’) to type ‘char* const&’
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:947:19: note: candidate: template<class _Dummy, typename std::enable_if<(std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ConstructibleTuple<char*, char*>() && std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ImplicitlyConvertibleTuple<char*, char*>()), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(const _T1&, const _T2&)
+         constexpr tuple(const _T1& __a1, const _T2& __a2)
+                   ^~~~~
+/usr/include/c++/7/tuple:947:19: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:110: note:   cannot convert ‘((VariableNode*)(((FactorGraph*)this)->FactorGraph::factor_node + ((sizetype)(((long unsigned int)i) * 144)))->FactorNode::<anonymous>.Node::neighbor.std::vector<Node*>::operator[](0))->VariableNode::nodename’ (type ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’) to type ‘char* const&’
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:933:26: note: candidate: template<class _U1, class _U2, typename std::enable_if<std::__and_<std::is_default_constructible<_Tp>, std::is_default_constructible<_U2>, std::__not_<std::__and_<std::__is_implicitly_default_constructible<_U1>, std::__is_implicitly_default_constructible<_U2> > > >::value, bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple()
+       explicit constexpr tuple()
+                          ^~~~~
+/usr/include/c++/7/tuple:933:26: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 0 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:919:17: note: candidate: template<class _U1, class _U2, typename std::enable_if<std::__and_<std::__is_implicitly_default_constructible<_U1>, std::__is_implicitly_default_constructible<_U2> >::value, bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple()
+       constexpr tuple()
+                 ^~~~~
+/usr/include/c++/7/tuple:919:17: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:368:175: note:   candidate expects 0 arguments, 2 provided
+   std::tuple<char*,char*> edgePair0 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[0]))->nodename, ((VariableNode*)(factor_node[i].neighbor[1]))->nodename);
+                                                                                                                                                                               ^
+FactorGraph.cpp:369:175: error: no matching function for call to ‘std::tuple<char*, char*>::tuple(std::__cxx11::string&, std::__cxx11::string&)’
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1203:18: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && (! _ImplicitlyMoveConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, std::pair<_U1, _U2>&&)
+         explicit tuple(allocator_arg_t __tag, const _Alloc& __a,
+                  ^~~~~
+/usr/include/c++/7/tuple:1203:18: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1193:9: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && _ImplicitlyMoveConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, std::pair<_U1, _U2>&&)
+         tuple(allocator_arg_t __tag, const _Alloc& __a, pair<_U1, _U2>&& __in)
+         ^~~~~
+/usr/include/c++/7/tuple:1193:9: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1183:18: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && (! _ImplicitlyConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const std::pair<_U1, _U2>&)
+         explicit tuple(allocator_arg_t __tag, const _Alloc& __a,
+                  ^~~~~
+/usr/include/c++/7/tuple:1183:18: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1173:9: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && _ImplicitlyConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const std::pair<_U1, _U2>&)
+         tuple(allocator_arg_t __tag, const _Alloc& __a,
+         ^~~~~
+/usr/include/c++/7/tuple:1173:9: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1162:11: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && (! _ImplicitlyMoveConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, std::tuple<_U1, _U2>&&)
+  explicit tuple(allocator_arg_t __tag, const _Alloc& __a,
+           ^~~~~
+/usr/include/c++/7/tuple:1162:11: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1152:2: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && _ImplicitlyMoveConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, std::tuple<_U1, _U2>&&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a, tuple<_U1, _U2>&& __in)
+  ^~~~~
+/usr/include/c++/7/tuple:1152:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1140:11: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && (! _ImplicitlyConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const std::tuple<_U1, _U2>&)
+  explicit tuple(allocator_arg_t __tag, const _Alloc& __a,
+           ^~~~~
+/usr/include/c++/7/tuple:1140:11: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1128:2: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && _ImplicitlyConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const std::tuple<_U1, _U2>&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a,
+  ^~~~~
+/usr/include/c++/7/tuple:1128:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1119:2: note: candidate: template<class _Alloc> std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, std::tuple<_T1, _T2>&&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a, tuple&& __in)
+  ^~~~~
+/usr/include/c++/7/tuple:1119:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1115:2: note: candidate: template<class _Alloc> std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const std::tuple<_T1, _T2>&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a, const tuple& __in)
+  ^~~~~
+/usr/include/c++/7/tuple:1115:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 3 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1109:11: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && (! _ImplicitlyMoveConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, _U1&&, _U2&&)
+  explicit tuple(allocator_arg_t __tag, const _Alloc& __a,
+           ^~~~~
+/usr/include/c++/7/tuple:1109:11: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 4 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1099:2: note: candidate: template<class _Alloc, class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && _ImplicitlyMoveConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, _U1&&, _U2&&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a, _U1&& __a1, _U2&& __a2)
+  ^~~~~
+/usr/include/c++/7/tuple:1099:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 4 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1089:11: note: candidate: template<class _Alloc, class _Dummy, typename std::enable_if<(std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ConstructibleTuple<char*, char*>() && (! std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ImplicitlyConvertibleTuple<char*, char*>())), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const _T1&, const _T2&)
+  explicit tuple(allocator_arg_t __tag, const _Alloc& __a,
+           ^~~~~
+/usr/include/c++/7/tuple:1089:11: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 4 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1077:2: note: candidate: template<class _Alloc, class _Dummy, typename std::enable_if<(std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ConstructibleTuple<char*, char*>() && std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ImplicitlyConvertibleTuple<char*, char*>()), bool>::type <anonymous> > std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&, const _T1&, const _T2&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a,
+  ^~~~~
+/usr/include/c++/7/tuple:1077:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 4 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1066:2: note: candidate: template<class _Alloc> std::tuple<_T1, _T2>::tuple(std::allocator_arg_t, const _Alloc&)
+  tuple(allocator_arg_t __tag, const _Alloc& __a)
+  ^~~~~
+/usr/include/c++/7/tuple:1066:2: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:110: note:   cannot convert ‘((VariableNode*)(((FactorGraph*)this)->FactorGraph::factor_node + ((sizetype)(((long unsigned int)i) * 144)))->FactorNode::<anonymous>.Node::neighbor.std::vector<Node*>::operator[](1))->VariableNode::nodename’ (type ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’) to type ‘std::allocator_arg_t’
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1059:28: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && (! _ImplicitlyMoveConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(std::pair<_U1, _U2>&&)
+         explicit constexpr tuple(pair<_U1, _U2>&& __in)
+                            ^~~~~
+/usr/include/c++/7/tuple:1059:28: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘std::pair<_T1, _T2>’
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1049:19: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && _ImplicitlyMoveConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(std::pair<_U1, _U2>&&)
+         constexpr tuple(pair<_U1, _U2>&& __in)
+                   ^~~~~
+/usr/include/c++/7/tuple:1049:19: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘std::pair<_T1, _T2>’
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1040:28: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && (! _ImplicitlyConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(const std::pair<_U1, _U2>&)
+         explicit constexpr tuple(const pair<_U1, _U2>& __in)
+                            ^~~~~
+/usr/include/c++/7/tuple:1040:28: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘const std::pair<_T1, _T2>’
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1031:19: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && _ImplicitlyConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(const std::pair<_U1, _U2>&)
+         constexpr tuple(const pair<_U1, _U2>& __in)
+                   ^~~~~
+/usr/include/c++/7/tuple:1031:19: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘const std::pair<_T1, _T2>’
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1022:28: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && (! _ImplicitlyMoveConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(std::tuple<_U1, _U2>&&)
+         explicit constexpr tuple(tuple<_U1, _U2>&& __in)
+                            ^~~~~
+/usr/include/c++/7/tuple:1022:28: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘std::tuple<_T1, _T2>’
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1013:19: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_MoveConstructibleTuple<_U1, _U2>() && _ImplicitlyMoveConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(std::tuple<_U1, _U2>&&)
+         constexpr tuple(tuple<_U1, _U2>&& __in)
+                   ^~~~~
+/usr/include/c++/7/tuple:1013:19: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘std::tuple<_T1, _T2>’
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1004:28: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && (! _ImplicitlyConvertibleTuple<_U1, _U2>())), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(const std::tuple<_U1, _U2>&)
+         explicit constexpr tuple(const tuple<_U1, _U2>& __in)
+                            ^~~~~
+/usr/include/c++/7/tuple:1004:28: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘const std::tuple<_T1, _T2>’
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:995:19: note: candidate: template<class _U1, class _U2, typename std::enable_if<(_ConstructibleTuple<_U1, _U2>() && _ImplicitlyConvertibleTuple<_U1, _U2>()), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(const std::tuple<_U1, _U2>&)
+         constexpr tuple(const tuple<_U1, _U2>& __in)
+                   ^~~~~
+/usr/include/c++/7/tuple:995:19: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’ is not derived from ‘const std::tuple<_T1, _T2>’
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:987:17: note: candidate: constexpr std::tuple<_T1, _T2>::tuple(std::tuple<_T1, _T2>&&) [with _T1 = char*; _T2 = char*]
+       constexpr tuple(tuple&&) = default;
+                 ^~~~~
+/usr/include/c++/7/tuple:987:17: note:   candidate expects 1 argument, 2 provided
+/usr/include/c++/7/tuple:985:17: note: candidate: constexpr std::tuple<_T1, _T2>::tuple(const std::tuple<_T1, _T2>&) [with _T1 = char*; _T2 = char*]
+       constexpr tuple(const tuple&) = default;
+                 ^~~~~
+/usr/include/c++/7/tuple:985:17: note:   candidate expects 1 argument, 2 provided
+/usr/include/c++/7/tuple:982:28: note: candidate: template<class _U1, class _U2, typename std::enable_if<((_MoveConstructibleTuple<_U1, _U2>() && (! _ImplicitlyMoveConvertibleTuple<_U1, _U2>())) && (! std::is_same<typename std::decay<_Tp>::type, std::allocator_arg_t>::value)), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(_U1&&, _U2&&)
+         explicit constexpr tuple(_U1&& __a1, _U2&& __a2)
+                            ^~~~~
+/usr/include/c++/7/tuple:982:28: note:   template argument deduction/substitution failed:
+/usr/include/c++/7/tuple:981:16: error: no type named ‘type’ in ‘struct std::enable_if<false, bool>’
+  bool>::type = false>
+                ^~~~~
+/usr/include/c++/7/tuple:981:16: note: invalid template non-type parameter
+/usr/include/c++/7/tuple:971:19: note: candidate: template<class _U1, class _U2, typename std::enable_if<((_MoveConstructibleTuple<_U1, _U2>() && _ImplicitlyMoveConvertibleTuple<_U1, _U2>()) && (! std::is_same<typename std::decay<_Tp>::type, std::allocator_arg_t>::value)), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(_U1&&, _U2&&)
+         constexpr tuple(_U1&& __a1, _U2&& __a2)
+                   ^~~~~
+/usr/include/c++/7/tuple:971:19: note:   template argument deduction/substitution failed:
+/usr/include/c++/7/tuple:970:16: error: no type named ‘type’ in ‘struct std::enable_if<false, bool>’
+  bool>::type = true>
+                ^~~~
+/usr/include/c++/7/tuple:970:16: note: invalid template non-type parameter
+/usr/include/c++/7/tuple:956:28: note: candidate: template<class _Dummy, typename std::enable_if<(std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ConstructibleTuple<char*, char*>() && (! std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ImplicitlyConvertibleTuple<char*, char*>())), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(const _T1&, const _T2&)
+         explicit constexpr tuple(const _T1& __a1, const _T2& __a2)
+                            ^~~~~
+/usr/include/c++/7/tuple:956:28: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:110: note:   cannot convert ‘((VariableNode*)(((FactorGraph*)this)->FactorGraph::factor_node + ((sizetype)(((long unsigned int)i) * 144)))->FactorNode::<anonymous>.Node::neighbor.std::vector<Node*>::operator[](1))->VariableNode::nodename’ (type ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’) to type ‘char* const&’
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:947:19: note: candidate: template<class _Dummy, typename std::enable_if<(std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ConstructibleTuple<char*, char*>() && std::_TC<std::is_same<_Dummy, void>::value, char*, char*>::_ImplicitlyConvertibleTuple<char*, char*>()), bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple(const _T1&, const _T2&)
+         constexpr tuple(const _T1& __a1, const _T2& __a2)
+                   ^~~~~
+/usr/include/c++/7/tuple:947:19: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:110: note:   cannot convert ‘((VariableNode*)(((FactorGraph*)this)->FactorGraph::factor_node + ((sizetype)(((long unsigned int)i) * 144)))->FactorNode::<anonymous>.Node::neighbor.std::vector<Node*>::operator[](1))->VariableNode::nodename’ (type ‘std::__cxx11::string {aka std::__cxx11::basic_string<char>}’) to type ‘char* const&’
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:933:26: note: candidate: template<class _U1, class _U2, typename std::enable_if<std::__and_<std::is_default_constructible<_Tp>, std::is_default_constructible<_U2>, std::__not_<std::__and_<std::__is_implicitly_default_constructible<_U1>, std::__is_implicitly_default_constructible<_U2> > > >::value, bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple()
+       explicit constexpr tuple()
+                          ^~~~~
+/usr/include/c++/7/tuple:933:26: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 0 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:919:17: note: candidate: template<class _U1, class _U2, typename std::enable_if<std::__and_<std::__is_implicitly_default_constructible<_U1>, std::__is_implicitly_default_constructible<_U2> >::value, bool>::type <anonymous> > constexpr std::tuple<_T1, _T2>::tuple()
+       constexpr tuple()
+                 ^~~~~
+/usr/include/c++/7/tuple:919:17: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:369:175: note:   candidate expects 0 arguments, 2 provided
+   std::tuple<char*,char*> edgePair1 = std::tuple<char*,char*>(((VariableNode*)(factor_node[i].neighbor[1]))->nodename, ((VariableNode*)(factor_node[i].neighbor[0]))->nodename);
+                                                                                                                                                                               ^
+FactorGraph.cpp:371:79: error: conversion from ‘std::map<std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int> >}’ to non-scalar type ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ requested
+   std::map<std::tuple<char*,char*>,int>::iterator it = this->potentialMap.find(edgePair0);
+                                                        ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+FactorGraph.cpp:372:9: error: no match for ‘operator!=’ (operand types are ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ and ‘std::map<std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int> >}’)
+   if(it != this->potentialMap.end()) cat = it->second;
+      ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/7/map:60:0,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_tree.h:319:7: note: candidate: bool std::_Rb_tree_iterator<_Tp>::operator!=(const _Self&) const [with _Tp = std::pair<const std::tuple<char*, char*>, int>; std::_Rb_tree_iterator<_Tp>::_Self = std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >]
+       operator!=(const _Self& __x) const _GLIBCXX_NOEXCEPT
+       ^~~~~~~~
+/usr/include/c++/7/bits/stl_tree.h:319:7: note:   no known conversion for argument 1 from ‘std::map<std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int> >}’ to ‘const _Self& {aka const std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >&}’
+In file included from /usr/include/c++/7/map:62:0,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_multimap.h:1083:5: note: candidate: template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator!=(const std::multimap<_Key, _Tp, _Compare, _Alloc>&, const std::multimap<_Key, _Tp, _Compare, _Alloc>&)
+     operator!=(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_multimap.h:1083:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::multimap<_Key, _Tp, _Compare, _Alloc>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/map:61:0,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_map.h:1418:5: note: candidate: template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator!=(const std::map<_Key, _Tp, _Compare, _Alloc>&, const std::map<_Key, _Tp, _Compare, _Alloc>&)
+     operator!=(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_map.h:1418:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::map<_Key, _Tp, _Compare, _Alloc>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/bits/stl_map.h:63:0,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/tuple:1423:5: note: candidate: template<class ... _TElements, class ... _UElements> constexpr bool std::operator!=(const std::tuple<_Tps ...>&, const std::tuple<_Args2 ...>&)
+     operator!=(const tuple<_TElements...>& __t,
+     ^~~~~~~~
+/usr/include/c++/7/tuple:1423:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::tuple<_Tps ...>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/tuple:39:0,
+                 from /usr/include/c++/7/bits/stl_map.h:63,
+                 from /usr/include/c++/7/map:61,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/array:257:5: note: candidate: template<class _Tp, long unsigned int _Nm> bool std::operator!=(const std::array<_Tp, _Nm>&, const std::array<_Tp, _Nm>&)
+     operator!=(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+     ^~~~~~~~
+/usr/include/c++/7/array:257:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::array<_Tp, _Nm>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/map:60:0,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_tree.h:1553:5: note: candidate: template<class _Key, class _Val, class _KeyOfValue, class _Compare, class _Alloc> bool std::operator!=(const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>&, const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>&)
+     operator!=(const _Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_tree.h:1553:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/map:60:0,
+                 from Util.h:5,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_tree.h:412:5: note: candidate: template<class _Val> bool std::operator!=(const std::_Rb_tree_iterator<_Tp>&, const std::_Rb_tree_const_iterator<_Val>&)
+     operator!=(const _Rb_tree_iterator<_Val>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_tree.h:412:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, int> >}’ is not derived from ‘const std::_Rb_tree_const_iterator<_Val>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/vector:64:0,
+                 from Util.h:4,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_vector.h:1625:5: note: candidate: template<class _Tp, class _Alloc> bool std::operator!=(const std::vector<_Tp, _Alloc>&, const std::vector<_Tp, _Alloc>&)
+     operator!=(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_vector.h:1625:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::vector<_Tp, _Alloc>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/string:52:0,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/basic_string.h:6081:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> bool std::operator!=(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const _CharT*)
+     operator!=(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/7/bits/basic_string.h:6081:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/string:52:0,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/basic_string.h:6069:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> bool std::operator!=(const _CharT*, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator!=(const _CharT* __lhs,
+     ^~~~~~~~
+/usr/include/c++/7/bits/basic_string.h:6069:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   mismatched types ‘const _CharT*’ and ‘std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/string:52:0,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/basic_string.h:6056:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> bool std::operator!=(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator!=(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/7/bits/basic_string.h:6056:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/string:41:0,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/allocator.h:164:5: note: candidate: template<class _Tp> bool std::operator!=(const std::allocator<_CharT>&, const std::allocator<_CharT>&)
+     operator!=(const allocator<_Tp>&, const allocator<_Tp>&)
+     ^~~~~~~~
+/usr/include/c++/7/bits/allocator.h:164:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::allocator<_CharT>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/string:41:0,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/allocator.h:158:5: note: candidate: template<class _T1, class _T2> bool std::operator!=(const std::allocator<_CharT>&, const std::allocator<_T2>&)
+     operator!=(const allocator<_T1>&, const allocator<_T2>&)
+     ^~~~~~~~
+/usr/include/c++/7/bits/allocator.h:158:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::allocator<_CharT>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/bits/char_traits.h:40:0,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/postypes.h:221:5: note: candidate: template<class _StateT> bool std::operator!=(const std::fpos<_StateT>&, const std::fpos<_StateT>&)
+     operator!=(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
+     ^~~~~~~~
+/usr/include/c++/7/bits/postypes.h:221:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::fpos<_StateT>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_iterator.h:1139:5: note: candidate: template<class _Iterator> bool std::operator!=(const std::move_iterator<_IteratorL>&, const std::move_iterator<_IteratorL>&)
+     operator!=(const move_iterator<_Iterator>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_iterator.h:1139:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::move_iterator<_IteratorL>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_iterator.h:1133:5: note: candidate: template<class _IteratorL, class _IteratorR> bool std::operator!=(const std::move_iterator<_IteratorL>&, const std::move_iterator<_IteratorR>&)
+     operator!=(const move_iterator<_IteratorL>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_iterator.h:1133:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::move_iterator<_IteratorL>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_iterator.h:352:5: note: candidate: template<class _IteratorL, class _IteratorR> bool std::operator!=(const std::reverse_iterator<_Iterator>&, const std::reverse_iterator<_IteratorR>&)
+     operator!=(const reverse_iterator<_IteratorL>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_iterator.h:352:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_iterator.h:314:5: note: candidate: template<class _Iterator> bool std::operator!=(const std::reverse_iterator<_Iterator>&, const std::reverse_iterator<_Iterator>&)
+     operator!=(const reverse_iterator<_Iterator>& __x,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_iterator.h:314:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:64:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_pair.h:461:5: note: candidate: template<class _T1, class _T2> constexpr bool std::operator!=(const std::pair<_T1, _T2>&, const std::pair<_T1, _T2>&)
+     operator!=(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_pair.h:461:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const std::pair<_T1, _T2>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/x86_64-linux-gnu/c++/7/bits/c++allocator.h:33:0,
+                 from /usr/include/c++/7/bits/allocator.h:46,
+                 from /usr/include/c++/7/string:41,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/ext/new_allocator.h:160:5: note: candidate: template<class _Tp> bool __gnu_cxx::operator!=(const __gnu_cxx::new_allocator<_Tp>&, const __gnu_cxx::new_allocator<_Tp>&)
+     operator!=(const new_allocator<_Tp>&, const new_allocator<_Tp>&)
+     ^~~~~~~~
+/usr/include/c++/7/ext/new_allocator.h:160:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const __gnu_cxx::new_allocator<_Tp>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_iterator.h:883:5: note: candidate: template<class _Iterator, class _Container> bool __gnu_cxx::operator!=(const __gnu_cxx::__normal_iterator<_Iterator, _Container>&, const __gnu_cxx::__normal_iterator<_Iterator, _Container>&)
+     operator!=(const __normal_iterator<_Iterator, _Container>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_iterator.h:883:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const __gnu_cxx::__normal_iterator<_Iterator, _Container>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+In file included from /usr/include/c++/7/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/7/bits/char_traits.h:39,
+                 from /usr/include/c++/7/string:40,
+                 from Util.h:3,
+                 from FactorGraph.h:3,
+                 from FactorGraph.cpp:1:
+/usr/include/c++/7/bits/stl_iterator.h:876:5: note: candidate: template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator!=(const __gnu_cxx::__normal_iterator<_IteratorL, _Container>&, const __gnu_cxx::__normal_iterator<_IteratorR, _Container>&)
+     operator!=(const __normal_iterator<_IteratorL, _Container>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/7/bits/stl_iterator.h:876:5: note:   template argument deduction/substitution failed:
+FactorGraph.cpp:372:35: note:   ‘std::map<std::tuple<char*, char*>, int>::iterator {aka std::_Rb_tree_iterator<std::pair<const std::tuple<char*, char*>, int> >}’ is not derived from ‘const __gnu_cxx::__normal_iterator<_IteratorL, _Container>’
+   if(it != this->potentialMap.end()) cat = it->second;
+                                   ^
+make: *** [FactorGraph.o] Error 1

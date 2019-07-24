@@ -1,0 +1,23 @@
+CRFModel.cpp: In function ‘void Df(void*, double*, int, int)’:
+CRFModel.cpp:205:22: error: ‘lambda’ was not declared in this scope
+   double* p_lambda = lambda;
+                      ^~~~~~
+CRFModel.cpp:205:22: note: suggested alternative: ‘p_lambda’
+   double* p_lambda = lambda;
+                      ^~~~~~
+                      p_lambda
+CRFModel.cpp:209:96: error: base operand of ‘->’ has non-pointer type ‘std::vector<DataNode*>’
+     pyPtr[model2->GetAttribParameterId(y, sample->node[i]->attrib[t])] += p_lambda[sample->node->[i]->attrib[t]] * model2->factor_graph->var_node[i].marginal[y] * labeled_given;
+                                                                                                ^~
+CRFModel.cpp:209:98: error: expected unqualified-id before ‘[’ token
+     pyPtr[model2->GetAttribParameterId(y, sample->node[i]->attrib[t])] += p_lambda[sample->node->[i]->attrib[t]] * model2->factor_graph->var_node[i].marginal[y] * labeled_given;
+                                                                                                  ^
+CRFModel.cpp:209:124: error: ‘class CRFModel’ has no member named ‘factor_graph’; did you mean ‘sample_factor_graph’?
+     pyPtr[model2->GetAttribParameterId(y, sample->node[i]->attrib[t])] += p_lambda[sample->node->[i]->attrib[t]] * model2->factor_graph->var_node[i].marginal[y] * labeled_given;
+                                                                                                                            ^~~~~~~~~~~~
+                                                                                                                            sample_factor_graph
+CRFModel.cpp: In function ‘void GetPriorsAndDoBP(void*, int)’:
+CRFModel.cpp:243:74: error: ‘pyPtr’ was not declared in this scope
+            (model2->sample_factor_graph[0]).SetVariableStateFactor(n, y, pyPtr[n*Y+y]);
+                                                                          ^~~~~
+make: *** [CRFModel.o] Error 1
