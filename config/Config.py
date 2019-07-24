@@ -55,7 +55,7 @@ class Config(object):
 		self.pos_num = 2 * self.max_length
 		self.num_classes = 2 # negative: 0, positive: 1
 		self.k_folds = 10 # For 10-fold cross-validation
-		self.hidden_size = 230 #230
+		self.hidden_size = 256 #230
 		self.pos_size = 5
 		self.max_epoch =50
 		self.opt_method = 'SGD'
@@ -63,16 +63,16 @@ class Config(object):
 		self.learning_rate = 0.5
 		self.weight_decay = 1e-5
 		self.drop_prob = 0.25 # DEFAULT: 0.5
-		self.checkpoint_dir = './checkpoint'
+		self.checkpoint_dir = './checkpoints'
 		self.test_result_dir = './test_result'
 		self.k_folds_test_result_dir = './test_result/k_folds_test_result'
 		self.save_epoch = 1
 		self.test_epoch = 1
 		self.test_k_fold = 1 # test and store auc of all k-folds at an iteration of 1
-		self.pretrain_model = None
+		self.pretrain_model = self.checkpoint_dir + '/PCNN_AVE-26'
 		self.trainModel = None
 		self.testModel = None
-		self.batch_size = 160 # try lower batch size for higher AUC; normally 160
+		self.batch_size = 7402 # try lower batch size for higher AUC; normally 160
 		self.word_size = 50
 		self.window_size = 3
 		self.epoch_range = None
@@ -231,7 +231,7 @@ class Config(object):
 		self.trainModel.selector.label = to_var(self.batch_label)
 		self.trainModel.classifier.label = to_var(self.batch_label)
 		self.optimizer.zero_grad()
-		(loss, _output), training_scores, train_sen_embeddings = self.trainModel()
+		(loss, _output), training_scores, h_w_logits = self.trainModel()#NEW
 		"""
 		print(_output)
 		print("^^ OUTPUT ^^")
@@ -250,7 +250,7 @@ class Config(object):
 			else:
 				self.acc_not_NA.add(prediction == self.batch_label[i])
 			self.acc_total.add(prediction == self.batch_label[i])
-		return loss.data.item(), training_scores, train_sen_embeddings#NEW
+		return loss.data.item(), training_scores, h_w_logits
 
 	def test_one_step(self):
 		self.testModel.embedding.word = to_var(self.batch_word)
@@ -323,12 +323,16 @@ class Config(object):
 
 	def test_one_epoch(self):
 		test_score = []
-		test_sen_embeddings = []
+		test_h = []
+		test_w = []
+		test_logits = []
 		for batch in tqdm(range(int(self.test_batches))):#JN EDIT HERE; REMOVE 'floor()'
 			self.get_test_batch(batch)
-			batch_score, sen_embeddings = self.test_one_step()
-			test_sen_embeddings += sen_embeddings
+			batch_score, h_w_logits = self.test_one_step()
 			test_score = test_score + batch_score
+			test_h += h_w_logits[0]
+			test_w += h_w_logits[1]
+			test_logits += h_w_logits[2]
 		test_result = []
 		for i in range(len(test_score)):
 			for j in range(1, len(test_score[i])):
@@ -359,7 +363,7 @@ class Config(object):
 		roc_auc = sklearn.metrics.auc(fpr, tpr)
 		print("ROC-AUC: ", roc_auc)
 
-		return roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_sen_embeddings
+		return roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, (test_h, test_w, test_logits)
 
 	def test(self):
 		best_epoch = None
@@ -510,6 +514,7 @@ class Config(object):
 		# CRF MODEL
 		#unspeakable evil
 
+		
 		nums = [b"0",b"1",b"2",b"3",b"4",b"5",b"6",b"7",b"8",b"9"]
 		param1 = sb(b"0.001")
 		param2 = sb(r+b"fold-"+nums[k]+b"-edges-ALT.txt")
@@ -517,6 +522,7 @@ class Config(object):
 		param4 = sb(b"model-fold-"+nums[k]+b".txt")
 		param5 = sb(r+b"maps/map"+nums[k]+b".txt")
 		model_crf = lib.InitializeCRF(param1,param2,param3,param4,param5)
+		
 
 		best_pr_auc = 0.0
 		best_roc_auc = 0.0
@@ -526,50 +532,51 @@ class Config(object):
 		best_tpr = None
 
 		train_epoch_score = []
-		train_epoch_sen_embeddings = []
 		best_train_score = []
 		best_test_score = []
 		best_epoch = 0
 
+		train_epoch_h= []
+		train_epoch_w = []
+		train_epoch_logits = []
 		print('Fold ' + str(k) + ' starts...\n')
 		for epoch in range(self.max_epoch):
 			self.acc_NA.clear();print(epoch, "epoch")
 			self.acc_not_NA.clear()
 			self.acc_total.clear()
 			train_epoch_score.clear()
-			train_epoch_sen_embeddings.clear()
-			#np.random.shuffle(self.train_order)
+			train_epoch_h.clear();train_epoch_w.clear();train_epoch_logits.clear()
 			print(self.train_batches)
 			for batch in range(self.train_batches):
-				if epoch <= 2:
-					self.get_train_batch(batch)
-					loss, train_batch_score, train_batch_sen_embeddings = self.train_one_step()#NEW
-					train_epoch_score += train_batch_score
-				else:
-					self.batch_size = len(self.data_train_label)+len(self.data_test_label)
-					self.get_train_batch(1)
-					loss, train_epoch_score, train_epoch_sen_embeddings = self.train_one_step()#NEW
+				self.get_train_batch(batch)
+				loss, train_batch_score, train_h_w_logits = self.train_one_step()#NEW
+				train_epoch_h += train_h_w_logits[0]
+				train_epoch_w += train_h_w_logits[1]
+				train_epoch_logits += train_h_w_logits[2]
+				train_epoch_score += train_batch_score
 				time_str = datetime.datetime.now().isoformat()
 				sys.stdout.write('Fold %d Epoch %d Step %d Time %s | Loss: %f, Neg Accuracy: %f, Pos Accuracy: %f, Total Accuracy: %f\r' % (k, epoch, batch, time_str, loss, self.acc_NA.get(), self.acc_not_NA.get(), self.acc_total.get()))
 				sys.stdout.flush()
 			if (epoch + 1) % self.test_epoch == 0:
 				self.testModel = self.trainModel
-				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_sen_embeddings = self.test_one_epoch()
+				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_h_w_logits = self.test_one_epoch()
 				#print(scores);scores = np.concatenate(scores,axis=0)
 				total_score = train_epoch_score + test_score
-				total_sen_embeddings = train_epoch_sen_embeddings + test_sen_embeddings
-				if epoch > 2:
-					self.batch_size = len(self.data_train_label+self.data_test_label)
-					h = np.concatenate(total_score,axis=0).astype("float64");
-					w = np.concatenate(total_sen_embeddings,axis=0).astype("float64");print(w.shape)
-					# CRF CODE
-					hgradient = np.zeros(h.shape)
-					wgradient = np.zeros(w.shape)
-					print(l,l.shape)
-					lib.Gradient(model_crf, as_p(hgradient), as_p(h), as_p(wgradient), as_p(w), w.shape[1]);
-					print(hgradient)
-					print(wgradient)
-					# END CRF CODE
+				total_h = train_epoch_h + test_h_w_logits[0]
+				#total_w = train_epoch_w + test_h_w_logits[1]
+				total_logits = train_epoch_logits + test_h_w_logits[2]
+				# CRF CODE
+				as_p = lambda a:ctypes.cast(a.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double))
+				h = np.concatenate(total_h,axis=0).astype("float64");
+				w = np.concatenate(train_epoch_w,axis=0).astype("float64");
+				l = np.concatenate(total_logits,axis=0).astype("float64");
+				l2 = np.concatenate(test_h_w_logits[1],axis=0).astype("float64")
+				hgradient = np.zeros(h.shape)
+				wgradient = np.zeros(w.shape)
+				lib.Gradient(model_crf, as_p(hgradient), as_p(h), as_p(wgradient), as_p(w), as_p(l), as_p(l2), 768);
+				print(hgradient.tolist())
+				print(wgradient.tolist());exit(0)
+				# END CRF CODE
 				if roc_auc > best_roc_auc:
 					best_pr_auc = pr_auc
 					best_roc_auc = roc_auc

@@ -20,14 +20,8 @@ ll = ctypes.cdll.LoadLibrary
 lib = ll('../../experiment/OpenCRF/HardcodedPotentials/crflib.so')
 lib.InitializeCRF.argtypes = [ctypes.c_char_p for i in range(5)]
 lib.InitializeCRF.restype = ctypes.c_void_p
-lib.Gradient.argtypes = [ctypes.c_void_p] + [ctypes.POINTER(ctypes.c_double) for i in range(4)] + [ctypes.c_int]
+lib.Gradient.argtypes = [ctypes.c_void_p] + [ctypes.POINTER(ctypes.c_double) for i in range(6)] + [ctypes.c_int]
 lib.Gradient.restype = None
-#lib.train.argtypes = [ctypes.c_void_p]
-#lib.train.restype = None
-#lib.GetNNOutput.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_double), ctypes.c_int]
-#lib.GetNNOutput.restype = None
-#lib.BackpropToNN.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_double), ctypes.c_int]
-#lib.BackpropToNN.restype = None
 # END
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
@@ -71,7 +65,7 @@ for k in range(k_folds):
 	con.load_k_fold_test_data(k)
 	con.set_train_model(model[args.model_name])
 	#con.set_test_model(model[args.model_name])
-	roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, scores = con.train_each_fold(k, lib)
+	roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, scores, ks = con.train_each_fold(k, lib)
 	roc_auc_all.append(roc_auc)
 	pr_auc_all.append(pr_auc)
 	#print(scores)

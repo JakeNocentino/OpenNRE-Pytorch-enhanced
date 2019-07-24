@@ -24,8 +24,8 @@ class Selector(nn.Module):
 		nn.init.xavier_uniform(self.attention_matrix.weight.data)
 
 	def get_logits(self, x):
-		logits = torch.matmul(x, torch.transpose(self.relation_matrix.weight, 0, 1),) + self.bias
-		return logits
+		logits = torch.matmul(x, torch.transpose(self.relation_matrix.weight, 0, 1),)# + self.bias
+		return x,torch.transpose(self.relation_matrix.weight, 0, 1), logits
 
 	def forward(self, x):
 		raise NotImplementedError
@@ -105,10 +105,10 @@ class Average(Selector):
 			tower_repre.append(final_repre)
 		stack_repre = torch.stack(tower_repre)
 		stack_repre = self.dropout(stack_repre)
-		logits = self.get_logits(stack_repre)
+		h, w, logits = self.get_logits(stack_repre)
 		# ADDITIONS FOR CROWDSOURCE PROJECT BELOW!
 		#score = F.softmax(logits, 1)
-		return logits#, list(score.data.cpu().numpy())
+		return h,w, logits#, list(score.data.cpu().numpy())
 
 	def test(self, x):
 		tower_repre = []
@@ -117,7 +117,8 @@ class Average(Selector):
 			final_repre = torch.mean(sen_matrix, 0)
 			tower_repre.append(final_repre)
 		stack_repre = torch.stack(tower_repre)
-		logits = self.get_logits(stack_repre)
+		h, w, logits = self.get_logits(stack_repre)
 		#score = F.softmax(logits, 1)
 		score = F.softmax(logits,1)
-		return list(score.data.cpu().numpy())
+		a =lambda b: list(b.data.cpu().numpy())
+		return list(score.data.cpu().numpy()), (a(h),a(w),a(logits))
