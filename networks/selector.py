@@ -108,7 +108,7 @@ class Average(Selector):
 		h, w, logits = self.get_logits(stack_repre)
 		# ADDITIONS FOR CROWDSOURCE PROJECT BELOW!
 		#score = F.softmax(logits, 1)
-		return h,w, logits#, list(score.data.cpu().numpy())
+		return h, w, logits#, list(score.data.cpu().numpy())
 
 	def test(self, x):
 		tower_repre = []

@@ -72,7 +72,7 @@ class Config(object):
 		self.pretrain_model = self.checkpoint_dir + '/PCNN_AVE-26'
 		self.trainModel = None
 		self.testModel = None
-		self.batch_size = 7402 # try lower batch size for higher AUC; normally 160
+		self.batch_size = 160 # try lower batch size for higher AUC; normally 160
 		self.word_size = 50
 		self.window_size = 3
 		self.epoch_range = None
@@ -220,7 +220,11 @@ class Config(object):
 		self.batch_mask = self.data_test_mask[index, :]
 		self.batch_scope = scope
 
-	def train_one_step(self):
+	"""
+	This function actually trains the model for one iteration of the batch data.
+	This function does not backpropagate; that is handled by train_one_step_part2.
+	"""
+	def train_one_step_part1(self):
 		self.trainModel.embedding.word = to_var(self.batch_word)
 		self.trainModel.embedding.pos1 = to_var(self.batch_pos1)
 		self.trainModel.embedding.pos2 = to_var(self.batch_pos2)
@@ -231,14 +235,21 @@ class Config(object):
 		self.trainModel.selector.label = to_var(self.batch_label)
 		self.trainModel.classifier.label = to_var(self.batch_label)
 		self.optimizer.zero_grad()
-		(loss, _output), training_scores, h_w_logits = self.trainModel()#NEW
-		
+		(loss, _output), training_scores, h_w_logits = self.trainModel()
+		return (loss, _output), training_scores, h_w_logits
+
+	"""
+	This function takes care of backpropagation using the w and h gradients
+	calculated by the conditional random field.
+	"""
+	def train_one_step_part2(self, h_grad, w_grad, loss, _output):
 		"""
 		GRADIENT GOES HERE
 		"""
-
-
 		loss.backward()
+		for name, param in self.trainModel:
+			if name == 'selector.relation_matrix.matrix':
+				param.grad = w_grad
 		self.optimizer.step()
 		for i, prediction in enumerate(_output):
 			if self.batch_label[i] == 0:
@@ -246,7 +257,7 @@ class Config(object):
 			else:
 				self.acc_not_NA.add(prediction == self.batch_label[i])
 			self.acc_total.add(prediction == self.batch_label[i])
-		return loss.data.item(), training_scores, h_w_logits
+
 
 	def test_one_step(self):
 		self.testModel.embedding.word = to_var(self.batch_word)
@@ -455,62 +466,11 @@ class Config(object):
 		self.total_recall = self.data_test_label[:, 1:].sum()
 
 
-	""" A train method suitable for k-folds cross-validation. """
-	def train_k_folds(self):
-		pr_auc_all = []
-		roc_auc_all = []
-		pr_x_all = []
-		pr_y_all = []
-		fpr_all = []
-		tpr_all = []
-
-		for k in range(self.k_folds):
-			self.load_k_fold_train_data(k)
-			self.load_k_fold_test_data(k)
-			print('Fold ' + str(k) + ' starts...')
-			self.acc_NA.clear()
-			self.acc_not_NA.clear()
-			self.acc_total.clear()
-			#np.random.shuffle(self.train_order)
-			print(self.train_batches)
-			for batch in range(self.train_batches):
-				self.get_train_batch(batch)
-				loss, train_batch_score = self.train_one_step()#NEW
-				time_str = datetime.datetime.now().isoformat()
-				sys.stdout.write('Fold %d Step %d Time %s | Loss: %f, NA Accuracy: %f, Not NA Accuracy: %f, Total Accuracy: %f\r' % (k, batch, time_str, loss, self.acc_NA.get(), self.acc_not_NA.get(), self.acc_total.get()))
-				sys.stdout.flush()
-			if (k + 1) % self.test_k_fold == 0:
-				self.testModel = self.trainModel
-				roc_auc, pr_auc, pr_x, pr_y, fpr_x, tpr_y, scores = self.test_one_epoch() # May or may not work; check up on this later
-				pr_auc_all.append(pr_auc)
-				roc_auc_all.append(roc_auc)
-				pr_x_avg.append(pr_x)
-				pr_y_avg.append(pr_y)
-				fpr_all.append(fpr_x)
-				tpr_all.append(tpr_y)
-		#avg auc and all
-		pr_auc_avg = statistics.mean(pr_auc_all)
-		roc_auc_avg = statistics.mean(roc_auc_all)
-		pr_x_avg = statistics.mean(pr_x_all)
-		pr_y_avg = statistics.mean(pr_y_all)
-		fpr_x_avg = statistics.mean(fpr_all)
-		tpr_y_avg = statistics.mean(tpr_all)
-		print('Finish training')
-		print('ROC-AUC average for ', self.k_folds, '-fold cross-validation training and testing: %f' %roc_auc_avg)
-		print('PR-AUC average for ', self.k_folds, '-fold cross-validation training and testing: %f' %pr_auc_avg)
-		print('Storing result...')
-		if not os.path.isdir(self.k_folds_test_result_dir):
-			os.mkdir(self.k_folds_test_result_dir)
-		np.save(os.path.join(self.k_folds_test_result_dir, self.model.__name__ + '_x.npy'), p_avg)
-		np.save(os.path.join(self.k_folds_test_result_dir, self.model.__name__ + '_y.npy'), r_avg)
-		print('Finish storing...')
-
-	""" An alternate method for k-folds cross-validation. May use this or train_k_folds, depending on which one works. """
+	# The method used to train the model for k-fold cross validation, as opposed to the regular train or test methods.
 	def train_each_fold(self, k, lib):
 		# CRF MODEL
 		#unspeakable evil
 
-		
 		nums = [b"0",b"1",b"2",b"3",b"4",b"5",b"6",b"7",b"8",b"9"]
 		param1 = sb(b"0.001")
 		param2 = sb(r+b"fold-"+nums[k]+b"-edges-ALT.txt")
@@ -537,15 +497,26 @@ class Config(object):
 		train_epoch_logits = []
 		print('Fold ' + str(k) + ' starts...\n')
 		for epoch in range(self.max_epoch):
-			self.acc_NA.clear();print(epoch, "epoch")
+			print(epoch, "epoch")
+
+			self.acc_NA.clear()
 			self.acc_not_NA.clear()
 			self.acc_total.clear()
 			train_epoch_score.clear()
-			train_epoch_h.clear();train_epoch_w.clear();train_epoch_logits.clear()
+			train_epoch_h.clear()
+			train_epoch_w.clear()
+			train_epoch_logits.clear()
+
+			for name, param in self.trainModel.named_parameters():
+				if param.requires_grad:
+					print(name, param.data)
+					print('{} SHAPE: {}'.format(name.upper(), param.shape))
+					print('{} GRAD: {}'.format(name.upper(), param.grad))
+
 			print(self.train_batches)
 			for batch in range(self.train_batches):
 				self.get_train_batch(batch)
-				loss, train_batch_score, train_h_w_logits = self.train_one_step()#NEW
+				loss_output, train_batch_score, train_h_w_logits = self.train_one_step_part1()
 				train_epoch_h += train_h_w_logits[0]
 				train_epoch_w += train_h_w_logits[1]
 				train_epoch_logits += train_h_w_logits[2]
@@ -570,9 +541,12 @@ class Config(object):
 				hgradient = np.zeros(h.shape)
 				wgradient = np.zeros(w.shape)
 				lib.Gradient(model_crf, as_p(hgradient), as_p(h), as_p(wgradient), as_p(w), as_p(l), as_p(l2), 768);
-				print(hgradient.tolist())
-				print(wgradient.tolist());exit(0)
-				# END CRF CODE
+				#print(hgradient.tolist())
+				#print(wgradient.tolist());exit(0)
+
+				# END CRF CODE AND USE GRADIENTS TO BACKPROPAGATE
+				self.train_one_step_part2(hgradient, wgradient, loss_output[0], loss_output[1])
+
 				if roc_auc > best_roc_auc:
 					best_pr_auc = pr_auc
 					best_roc_auc = roc_auc
