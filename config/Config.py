@@ -254,10 +254,11 @@ class Config(object):
 		# replace w gradient with new gradient calculated
 		w_grad_numpy = np.array(w_grad_new)
 		w_grad_tensor = torch.from_numpy(w_grad_numpy)
+		w_grad_param = nn.Parameter(w_grad_tensor)
 		loss.backward()
 		for name, param in self.trainModel.named_parameters():
 			if name == 'selector.relation_matrix.weight':
-				param.grad = w_grad_tensor
+				param.grad = w_grad_param
 
 		self.optimizer.step()
 		for i, prediction in enumerate(_output):
