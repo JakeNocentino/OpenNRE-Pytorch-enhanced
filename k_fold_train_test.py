@@ -14,6 +14,7 @@ import statistics
 import ctypes
 
 # START
+""" UNCOMMENT
 sb = ctypes.create_string_buffer
 r = b"/home/jakob/experiment/OpenCRF/HardcodedPotentials/bar/rawdata/"
 ll = ctypes.cdll.LoadLibrary
@@ -22,6 +23,7 @@ lib.InitializeCRF.argtypes = [ctypes.c_char_p for i in range(5)]
 lib.InitializeCRF.restype = ctypes.c_void_p
 lib.Gradient.argtypes = [ctypes.c_void_p] + [ctypes.POINTER(ctypes.c_double) for i in range(6)] + [ctypes.c_int]
 lib.Gradient.restype = None
+"""
 # END
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
@@ -65,7 +67,7 @@ for k in range(k_folds):
 	con.load_k_fold_test_data(k)
 	con.set_train_model(model[args.model_name])
 	#con.set_test_model(model[args.model_name])
-	roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, scores, ks = con.train_each_fold(k, lib)
+	roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, scores, ks = con.train_each_fold(k)#, lib) UNCOMMENT
 	roc_auc_all.append(roc_auc)
 	pr_auc_all.append(pr_auc)
 	#print(scores)

@@ -10,8 +10,10 @@ class Selector(nn.Module):
 		super(Selector, self).__init__()
 		self.config = config
 		self.relation_matrix = nn.Embedding(self.config.num_classes, relation_dim)
-		self.bias = nn.Parameter(torch.Tensor(self.config.num_classes))
-		self.attention_matrix = nn.Embedding(self.config.num_classes, relation_dim)
+		
+		#self.bias = nn.Parameter(torch.Tensor(self.config.num_classes))
+		# comment the below out unless using attention
+		#self.attention_matrix = nn.Embedding(self.config.num_classes, relation_dim)
 		self.init_weights()
 		self.scope = None
 		self.attention_query = None
@@ -21,11 +23,20 @@ class Selector(nn.Module):
 	def init_weights(self):	
 		nn.init.xavier_uniform(self.relation_matrix.weight.data)
 		nn.init.normal(self.bias)
-		nn.init.xavier_uniform(self.attention_matrix.weight.data)
+		# comment the below out unless using attention
+		#nn.init.xavier_uniform(self.attention_matrix.weight.data)
 
 	def get_logits(self, x):
 		logits = torch.matmul(x, torch.transpose(self.relation_matrix.weight, 0, 1),)# + self.bias
-		return x,torch.transpose(self.relation_matrix.weight, 0, 1), logits
+		#print(self.relation_matrix)
+		#print(self.relation_matrix.grad)
+		#print('RELATION MATRIX')
+		# print(logits)
+		# print(logits.grad)
+		# print('LOGITS')
+		#print(self.bias)
+		#print('bias')
+		return x, torch.transpose(self.relation_matrix.weight, 0, 1), logits
 
 	def forward(self, x):
 		raise NotImplementedError
@@ -118,7 +129,6 @@ class Average(Selector):
 			tower_repre.append(final_repre)
 		stack_repre = torch.stack(tower_repre)
 		h, w, logits = self.get_logits(stack_repre)
-		#score = F.softmax(logits, 1)
 		score = F.softmax(logits,1)
 		a =lambda b: list(b.data.cpu().numpy())
 		return list(score.data.cpu().numpy()), (a(h),a(w),a(logits))
