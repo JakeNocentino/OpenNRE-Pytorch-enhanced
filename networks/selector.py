@@ -10,8 +10,7 @@ class Selector(nn.Module):
 		super(Selector, self).__init__()
 		self.config = config
 		self.relation_matrix = nn.Embedding(self.config.num_classes, relation_dim)
-		
-		#self.bias = nn.Parameter(torch.Tensor(self.config.num_classes))
+		self.bias = nn.Parameter(torch.Tensor(self.config.num_classes))
 		# comment the below out unless using attention
 		#self.attention_matrix = nn.Embedding(self.config.num_classes, relation_dim)
 		self.init_weights()
@@ -21,21 +20,13 @@ class Selector(nn.Module):
 		self.dropout = nn.Dropout(self.config.drop_prob)
 
 	def init_weights(self):	
-		nn.init.xavier_uniform(self.relation_matrix.weight.data)
-		nn.init.normal(self.bias)
+		nn.init.xavier_uniform_(self.relation_matrix.weight.data)
+		nn.init.normal_(self.bias)
 		# comment the below out unless using attention
 		#nn.init.xavier_uniform(self.attention_matrix.weight.data)
 
 	def get_logits(self, x):
-		logits = torch.matmul(x, torch.transpose(self.relation_matrix.weight, 0, 1),)# + self.bias
-		#print(self.relation_matrix)
-		#print(self.relation_matrix.grad)
-		#print('RELATION MATRIX')
-		# print(logits)
-		# print(logits.grad)
-		# print('LOGITS')
-		#print(self.bias)
-		#print('bias')
+		logits = torch.matmul(x, torch.transpose(self.relation_matrix.weight, 0, 1),) + self.bias
 		return x, torch.transpose(self.relation_matrix.weight, 0, 1), logits
 
 	def forward(self, x):

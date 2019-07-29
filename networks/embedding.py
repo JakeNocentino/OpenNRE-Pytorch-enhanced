@@ -22,10 +22,10 @@ class Embedding(nn.Module):
 		self.word_embedding.weight.data.copy_(torch.from_numpy(self.config.data_word_vec))
 	
 	def init_pos_weights(self):
-		nn.init.xavier_uniform(self.pos1_embedding.weight.data)
+		nn.init.xavier_uniform_(self.pos1_embedding.weight.data)
 		if self.pos1_embedding.padding_idx is not None:
 			self.pos1_embedding.weight.data[self.pos1_embedding.padding_idx].fill_(0)
-		nn.init.xavier_uniform(self.pos2_embedding.weight.data)
+		nn.init.xavier_uniform_(self.pos2_embedding.weight.data)
 		if self.pos2_embedding.padding_idx is not None:
 			self.pos2_embedding.weight.data[self.pos2_embedding.padding_idx].fill_(0)
 			

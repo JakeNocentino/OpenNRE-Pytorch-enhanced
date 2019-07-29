@@ -2,9 +2,8 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
+from torch.autograd import grad
 import torch.optim as optim
-#from torchviz import make_dot
-#import graphviz
 import numpy as np
 import os
 import time
@@ -16,13 +15,19 @@ from tqdm import tqdm
 import statistics
 import ctypes
 
-# FILES FOR USE OF JACOB WHEN CRF IS NOT CONNECTED
-#wgrad = np.load('wgrad.npy')
-#hgrad = np.load('hgrad.npy')
+from networks.selector import *
+from networks.encoder import *
+from networks.embedding import *
+from networks.classifier import *
 
+# FILES FOR USE OF JACOB WHEN CRF IS NOT CONNECTED
+wgrad = np.load('wgrad3.npy')
+
+""" UNCOMMENT
 as_p = lambda a:ctypes.cast(a.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double))
 sb = ctypes.create_string_buffer 
 r = b"/home/jakob/experiment/rawdata/"
+"""
 def to_var(x):
 	#return Variable(torch.from_numpy(x).cuda()) JN EDIT. CHANGE LATER
 	return Variable(torch.from_numpy(x))
@@ -66,14 +71,14 @@ class Config(object):
 		self.max_epoch =50
 		self.opt_method = 'SGD'
 		self.optimizer = None
-		self.learning_rate = 0.5
+		self.learning_rate = 0.9 # normally .5 or .9
 		self.weight_decay = 1e-5
 		self.drop_prob = 0.25 # DEFAULT: 0.5
 		self.checkpoint_dir = './checkpoint'
 		self.test_result_dir = './test_result'
 		self.k_folds_test_result_dir = './test_result/k_folds_test_result'
 		self.save_epoch = 1
-		self.save = True
+		self.save = False
 		self.test_epoch = 1
 		self.test_k_fold = 1 # test and store auc of all k-folds at an iteration of 1
 		self.pretrain_model = self.checkpoint_dir + '/PCNN_AVE-28'
@@ -233,15 +238,15 @@ class Config(object):
 	"""
 
 	def train_one_step_part1(self):
-		self.trainModel.embedding.word = to_var(self.batch_word)
-		self.trainModel.embedding.pos1 = to_var(self.batch_pos1)
-		self.trainModel.embedding.pos2 = to_var(self.batch_pos2)
-		self.trainModel.encoder.mask = to_var(self.batch_mask)
+		self.trainModel.embedding.word = to_var(self.batch_word)#.retain_grad()
+		self.trainModel.embedding.pos1 = to_var(self.batch_pos1)#.retain_grad()
+		self.trainModel.embedding.pos2 = to_var(self.batch_pos2)#.retain_grad()
+		self.trainModel.encoder.mask = to_var(self.batch_mask)#.retain_grad()
 		self.trainModel.selector.scope = self.batch_scope
 		if self.use_bag:
 			self.trainModel.selector.attention_query = to_var(self.batch_attention_query)
-		self.trainModel.selector.label = to_var(self.batch_label)
-		self.trainModel.classifier.label = to_var(self.batch_label)
+		self.trainModel.selector.label = to_var(self.batch_label)#.retain_grad()
+		self.trainModel.classifier.label = to_var(self.batch_label)#.retain_grad()
 		self.optimizer.zero_grad()
 		(loss, _output), training_scores, h_w_logits = self.trainModel()
 
@@ -258,58 +263,34 @@ class Config(object):
 	This function takes care of backpropagation using the w and h gradients
 	calculated by the conditional random field.
 	"""
-	def train_one_step_part2(self, h_grad, w_grad, loss):
+	def train_one_step_part2(self, w_grad, loss):
 		# format w properly into 2 x K numpy array
+		print(w_grad)
 		w_grad_new = []
-		m = []
 		for i in range(2):
 			l = []
 			for j in range(i, len(w_grad), 2):
 				l.append(w_grad[j])
-			w_grad_new.append(l)
+			w_grad_new.insert(0, l)
+			#w_grad_new.append(l)
 
 		# replace w gradient with new gradient calculated
 		w_grad_numpy = np.array(w_grad_new)
 		w_grad_tensor = torch.from_numpy(w_grad_numpy).float()
 		w_grad_var = Variable(w_grad_tensor)
 
-		#loss.backward()
-
 		# Displaying
 		#for name, param in self.trainModel.named_parameters():
 		#	print(f"{name}\ndata: {param.data}\nrequires_grad: {param.requires_grad}\ngrad: {param.grad}\ngrad_fn: {param.grad_fn}\nis_leaf: {param.is_leaf}\n")
+
+		loss.backward()
+
+		# params = self.trainModel.state_dict()
 
 		for name, param in self.trainModel.named_parameters():
 			if name == 'selector.relation_matrix.weight':
 				param.grad = w_grad_var
 
-		for name, param in self.trainModel.named_parameters():
-			if name == 'encoder.cnn.cnn.bias':
-				param.backward(torch.ones_like(param))
-
-		for name, param in self.trainModel.named_parameters():
-			if name == 'encoder.cnn.cnn.weight':
-				param.backward(torch.ones_like(param))
-
-		for name, param in self.trainModel.named_parameters():
-			if name == 'embedding.pos2_embedding.weight':
-				param.backward(torch.ones_like(param))
-
-		for name, param in self.trainModel.named_parameters():
-			if name == 'embedding.pos1_embedding.weight':
-				param.backward(torch.ones_like(param))
-
-		for name, param in self.trainModel.named_parameters():
-			if name == 'enmbedding.word_embedding.weight':
-				param.backward(torch.ones_like(param))
-				#print(name.upper())
-				#param.backward(torch.ones_like(param, requires_grad=False))
-				#param.retain_graph = True
-				#print(param)
-				#print(param.data)
-				#print(param.shape)
-				#print(param.grad.data)
-				#print(param.grad.shape)
 		self.optimizer.step()
 
 	def train_one_step_original(self):
@@ -531,10 +512,11 @@ class Config(object):
 
 
 	# The method used to train the model for k-fold cross validation, as opposed to the regular train or test methods.
-	def train_each_fold(self, k, lib):
+	def train_each_fold(self, k):#, lib):
 		# CRF MODEL
 		#unspeakable evil
 
+		""" UNCOMMENT
 		nums = [b"0",b"1",b"2",b"3",b"4",b"5",b"6",b"7",b"8",b"9"]
 		param1 = sb(b"0.001")
 		param2 = sb(r+b"fold-"+nums[k]+b"-edges-ALT.txt")
@@ -542,6 +524,7 @@ class Config(object):
 		param4 = sb(b"model-fold-"+nums[k]+b".txt")
 		param5 = sb(r+b"maps/map"+nums[k]+b".txt")
 		model_crf = lib.InitializeCRF(param1,param2,param3,param4,param5)
+		"""
 		
 
 		best_pr_auc = 0.0
@@ -581,11 +564,10 @@ class Config(object):
 
 			print(self.train_batches)
 			for batch in range(self.train_batches):
-				# TRAINING PORTIONG
+				# TRAINING PORTION
 
 				self.get_train_batch(batch)
 				(loss, _output), train_batch_score, train_h_w_logits = self.train_one_step_part1()
-				self.train_one_step_part2(hgrad.astype('float32'), wgrad.astype('float32'), loss)
 				#loss, train_batch_score= self.train_one_step_original()
 				train_epoch_h += train_h_w_logits[0]
 				train_epoch_w += train_h_w_logits[1]
@@ -595,16 +577,30 @@ class Config(object):
 				sys.stdout.write('Fold %d Epoch %d Step %d Time %s | Loss: %f, Neg Accuracy: %f, Pos Accuracy: %f, Total Accuracy: %f\r' % (k, epoch, batch, time_str, loss.data.item(), self.acc_NA.get(), self.acc_not_NA.get(), self.acc_total.get()))
 				sys.stdout.flush()
 
+				# use gradients to backpropagate
+				self.train_one_step_part2(wgrad.astype('float32'), loss)
+
 				# TESTING PORTING
-				self.testModel = self.trainModel
-				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_h_w_logits = self.test_one_epoch()
+				#self.testModel = self.trainModel
+				#roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_h_w_logits = self.test_one_epoch()
 				#print(scores)
 				#scores = np.concatenate(scores,axis=0)
+				#total_score = train_epoch_score + test_score
+				#total_h = train_epoch_h + test_h_w_logits[0]
+				#total_w = train_epoch_w + test_h_w_logits[1]
+				#total_logits = train_epoch_logits + test_h_w_logits[2]
+
+				# If you want to test your model OLD! IGNORE for now
+			if (epoch + 1) % self.test_epoch == 0:
+				self.testModel = self.trainModel
+				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_h_w_logits = self.test_one_epoch()
+				#print(scores);scores = np.concatenate(scores,axis=0)
 				total_score = train_epoch_score + test_score
 				total_h = train_epoch_h + test_h_w_logits[0]
 				total_w = train_epoch_w + test_h_w_logits[1]
 				total_logits = train_epoch_logits + test_h_w_logits[2]
 				# CRF CODE
+				""" UNCOMMENT
 				as_p = lambda a:ctypes.cast(a.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double))
 				h = np.concatenate(total_h,axis=0).astype("float64");
 				w = np.concatenate(train_epoch_w,axis=0).astype("float64");
@@ -612,11 +608,11 @@ class Config(object):
 				l2 = np.concatenate(test_h_w_logits[1],axis=0).astype("float64")
 				hgradient = np.zeros(h.shape)
 				wgradient = np.zeros(w.shape)
-				lib.Gradient(model_crf, as_p(hgradient), as_p(h), as_p(wgradient), as_p(w), as_p(l), as_p(l2), 768) UNCOMMENT
+				lib.Gradient(model_crf, as_p(hgradient), as_p(h), as_p(wgradient), as_p(w), as_p(l), as_p(l2), 768)
+				"""
 				#print(hgradient.tolist())
 				#print(wgradient.tolist());exit(0)
 				# END CRF CODE AND USE GRADIENTS TO BACKPROPAGATE
-				self.train_one_step_part2(hgradient.astype('float32'), wgradient.astype('float32'), loss)
 
 				if roc_auc > best_roc_auc:
 					best_pr_auc = pr_auc
@@ -675,6 +671,8 @@ class Config(object):
 		print("Finish training")
 		print("Best epoch = {} | pr_auc = {} | roc_auc = {}".format(best_epoch, best_pr_auc, roc_auc))
 
+		self.cur_epoch += 1
+
 		return best_roc_auc, best_pr_auc, best_p, best_r, best_fpr, best_tpr, best_total_score
 
 
@@ -714,8 +712,3 @@ class Config(object):
 		np.save(os.path.join(self.test_result_dir, self.model.__name__ + '_x.npy'), best_p)
 		np.save(os.path.join(self.test_result_dir, self.model.__name__ + '_y.npy'), best_r)
 		print("Finish storing")"""
-
-	""" def evaluate(self, sentence):
-		with torch.no_grad():
-			input_tensor =  """
-
