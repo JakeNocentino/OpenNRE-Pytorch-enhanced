@@ -9,6 +9,7 @@ from networks.encoder import *
 from networks.selector import *
 from networks.classifier import *
 import numpy
+
 class Model(nn.Module):
 	def __init__(self, config):	
 		super(Model, self).__init__()
@@ -25,7 +26,7 @@ class Model(nn.Module):
 
 		score = F.softmax(logits,1)
 		a = lambda b:list(b.data.cpu().numpy())
-		return self.classifier(logits), list(score.data.cpu().numpy()), (a(h),a(w),a(logits))
+		return self.classifier(logits), list(score.data.cpu().numpy()), (a(h),a(w),a(logits)), h
 		
 	def test(self):
 		embedding = self.embedding()

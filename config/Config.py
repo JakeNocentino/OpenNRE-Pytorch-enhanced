@@ -21,6 +21,7 @@ from networks.embedding import *
 from networks.classifier import *
 
 # FILES FOR USE OF JACOB WHEN CRF IS NOT CONNECTED
+hgrad = np.load('hgrad3.npy')
 wgrad = np.load('wgrad3.npy')
 
 """ UNCOMMENT
@@ -68,10 +69,10 @@ class Config(object):
 		self.k_folds = 10 # For 10-fold cross-validation
 		self.hidden_size = 256 #230
 		self.pos_size = 5
-		self.max_epoch =50
+		self.max_epoch = 50
 		self.opt_method = 'SGD'
 		self.optimizer = None
-		self.learning_rate = 0.9 # normally .5 or .9
+		self.learning_rate = 0.01 # normally .5 or .9
 		self.weight_decay = 1e-5
 		self.drop_prob = 0.25 # DEFAULT: 0.5
 		self.checkpoint_dir = './checkpoint'
@@ -84,7 +85,8 @@ class Config(object):
 		self.pretrain_model = self.checkpoint_dir + '/PCNN_AVE-28'
 		self.trainModel = None
 		self.testModel = None
-		self.batch_size = 7402 # try lower batch size for higher AUC; normally 160
+		self.batch_size = 1 # try lower batch size for higher AUC; normally 160
+		self.current_batch = 0 # used to keep track of current batch number
 		self.word_size = 50
 		self.window_size = 3
 		self.epoch_range = None
@@ -237,7 +239,7 @@ class Config(object):
 	This function does not backpropagate; that is handled by train_one_step_part2.
 	"""
 
-	def train_one_step_part1(self):
+	def train_one_step_part1(self, hgrad):
 		self.trainModel.embedding.word = to_var(self.batch_word)#.retain_grad()
 		self.trainModel.embedding.pos1 = to_var(self.batch_pos1)#.retain_grad()
 		self.trainModel.embedding.pos2 = to_var(self.batch_pos2)#.retain_grad()
@@ -247,8 +249,39 @@ class Config(object):
 			self.trainModel.selector.attention_query = to_var(self.batch_attention_query)
 		self.trainModel.selector.label = to_var(self.batch_label)#.retain_grad()
 		self.trainModel.classifier.label = to_var(self.batch_label)#.retain_grad()
-		self.optimizer.zero_grad()
-		(loss, _output), training_scores, h_w_logits = self.trainModel()
+		#self.optimizer.zero_grad()
+		(loss, _output), training_scores, h_w_logits, h = self.trainModel()
+
+
+		# h_grad formatting
+		K_CONST = 768
+		N_CONST = 7402
+		N_TRAIN_CONST = 6661
+
+		hgrad_new = []
+		#for n in range(N_TRAIN_CONST):
+		#	h_row = []
+		#	for k in range(K_CONST):
+		#		h_row.append(hgrad[(n * K_CONST) + k])
+		#	hgrad_new.append(h_row)
+		h_row = []
+		for k in range(K_CONST):
+			h_row.append(hgrad[self.current_batch * K_CONST + k])
+
+		h_grad_numpy = numpy.array(h_row)
+		h_grad_tensor = torch.from_numpy(h_grad_numpy).unsqueeze_(0).float()
+
+		# print(h_grad_numpy)
+
+		# loss.backward()
+
+		# experimental backward()
+		h.backward(gradient=h_grad_tensor)
+
+		# Displaying
+		#for name, param in self.trainModel.named_parameters():
+		#	print('\n\n')
+		#	print(f"{name}\ndata: {param.data}\nrequires_grad: {param.requires_grad}\ngrad: {param.grad}\ngrad_fn: {param.grad_fn}\nis_leaf: {param.is_leaf}\nshape: {param.shape}")
 
 		for i, prediction in enumerate(_output):
 			if self.batch_label[i] == 0:
@@ -263,36 +296,46 @@ class Config(object):
 	This function takes care of backpropagation using the w and h gradients
 	calculated by the conditional random field.
 	"""
+
 	def train_one_step_part2(self, w_grad, loss):
 		# format w properly into 2 x K numpy array
-		print(w_grad)
+		#print(w_grad)
 		w_grad_new = []
 		for i in range(2):
 			l = []
 			for j in range(i, len(w_grad), 2):
 				l.append(w_grad[j])
-			w_grad_new.insert(0, l)
-			#w_grad_new.append(l)
+			#w_grad_new.insert(0, l)
+			w_grad_new.append(l)
 
 		# replace w gradient with new gradient calculated
 		w_grad_numpy = np.array(w_grad_new)
 		w_grad_tensor = torch.from_numpy(w_grad_numpy).float()
-		w_grad_var = Variable(w_grad_tensor)
 
 		# Displaying
 		#for name, param in self.trainModel.named_parameters():
-		#	print(f"{name}\ndata: {param.data}\nrequires_grad: {param.requires_grad}\ngrad: {param.grad}\ngrad_fn: {param.grad_fn}\nis_leaf: {param.is_leaf}\n")
+		#	print('\n\n')
+		#	print(f"{name}\ndata: {param.data}\nrequires_grad: {param.requires_grad}\ngrad: {param.grad}\ngrad_fn: {param.grad_fn}\nis_leaf: {param.is_leaf}\nshape: {param.shape}")
 
-		loss.backward()
+		# loss.backward()
 
 		# params = self.trainModel.state_dict()
 
+		#nn.utils.clip_grad_norm_(self.trainModel.parameters(), 0.25)
+
 		for name, param in self.trainModel.named_parameters():
 			if name == 'selector.relation_matrix.weight':
-				param.grad = w_grad_var
+				param.grad = w_grad_tensor
 
-		self.optimizer.step()
 
+		# Displaying
+		for name, param in self.trainModel.named_parameters():
+			print('\n\n')
+			print(f"{name}\ndata: {param.data}\nrequires_grad: {param.requires_grad}\ngrad: {param.grad}\ngrad_fn: {param.grad_fn}\nis_leaf: {param.is_leaf}\nshape: {param.shape}")
+
+		#self.optimizer.step()
+
+	"""
 	def train_one_step_original(self):
 		self.trainModel.embedding.word = to_var(self.batch_word)
 		self.trainModel.embedding.pos1 = to_var(self.batch_pos1)
@@ -317,6 +360,7 @@ class Config(object):
 				self.acc_not_NA.add(prediction == self.batch_label[i])
 			self.acc_total.add(prediction == self.batch_label[i])
 		return loss.data.item(), training_scores
+	"""
 
 
 	def test_one_step(self):
@@ -564,10 +608,11 @@ class Config(object):
 
 			print(self.train_batches)
 			for batch in range(self.train_batches):
+				self.current_batch = batch
 				# TRAINING PORTION
 
 				self.get_train_batch(batch)
-				(loss, _output), train_batch_score, train_h_w_logits = self.train_one_step_part1()
+				(loss, _output), train_batch_score, train_h_w_logits = self.train_one_step_part1(hgrad)
 				#loss, train_batch_score= self.train_one_step_original()
 				train_epoch_h += train_h_w_logits[0]
 				train_epoch_w += train_h_w_logits[1]
@@ -580,15 +625,9 @@ class Config(object):
 				# use gradients to backpropagate
 				self.train_one_step_part2(wgrad.astype('float32'), loss)
 
-				# TESTING PORTING
-				#self.testModel = self.trainModel
-				#roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_h_w_logits = self.test_one_epoch()
-				#print(scores)
-				#scores = np.concatenate(scores,axis=0)
-				#total_score = train_epoch_score + test_score
-				#total_h = train_epoch_h + test_h_w_logits[0]
-				#total_w = train_epoch_w + test_h_w_logits[1]
-				#total_logits = train_epoch_logits + test_h_w_logits[2]
+				if self.current_batch == 6660:
+					self.optimizer.step()
+					self.optimizer.zero_grad()
 
 				# If you want to test your model OLD! IGNORE for now
 			if (epoch + 1) % self.test_epoch == 0:

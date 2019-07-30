@@ -10,7 +10,7 @@ class Classifier(nn.Module):
 		super(Classifier, self).__init__()
 		self.config = config
 		self.label = None
-		self.loss = nn.CrossEntropyLoss()
+		self.loss = nn.NLLLoss()
 		
 	def forward(self, logits):
 		loss = self.loss(logits, self.label)
