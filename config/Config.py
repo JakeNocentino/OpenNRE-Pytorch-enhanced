@@ -625,19 +625,20 @@ class Config(object):
 				sys.stdout.write('Fold %d Epoch %d Step %d Time %s | Loss: %f, Neg Accuracy: %f, Pos Accuracy: %f, Total Accuracy: %f\r' % (k, epoch, batch, time_str, loss.data.item(), self.acc_NA.get(), self.acc_not_NA.get(), self.acc_total.get()))
 				sys.stdout.flush()
 
+				#self.cur_epoch += 1
+
 				# use gradients to backpropagate
 				# self.train_one_step_part2(wgrad.astype('float32'), loss)
 
-				if self.current_batch == 6660:
-					self.optimizer.step()
-					self.optimizer.zero_grad()
+				#if self.current_batch == 6660:
+				#	self.optimizer.step()
+				#	self.optimizer.zero_grad()
 
 				# If you want to test your model OLD! IGNORE for now
 			if (epoch + 1) % self.test_epoch == 0:
 				self.testModel = self.trainModel
-				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_h_w_logits = self.test_one_epoch()
+				_, _, _, _, _, _, _, test_h_w_logits = self.test_one_epoch()
 				#print(scores);scores = np.concatenate(scores,axis=0)
-				total_score = train_epoch_score + test_score
 				total_h = train_epoch_h + test_h_w_logits[0]
 				total_w = train_epoch_w + test_h_w_logits[1]
 				total_logits = train_epoch_logits + test_h_w_logits[2]
@@ -664,6 +665,10 @@ class Config(object):
 						param.grad = w_grad_tensor
 
 				self.optimizer.step()
+
+				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, _ = self.test_one_epoch()
+
+				total_score = train_epoch_score + test_score
 
 
 				if roc_auc > best_roc_auc:
@@ -722,8 +727,6 @@ class Config(object):
 		best_total_score = best_train_score.extend(best_test_score)
 		print("Finish training")
 		print("Best epoch = {} | pr_auc = {} | roc_auc = {}".format(best_epoch, best_pr_auc, roc_auc))
-
-		self.cur_epoch += 1
 
 		return best_roc_auc, best_pr_auc, best_p, best_r, best_fpr, best_tpr, best_total_score
 
