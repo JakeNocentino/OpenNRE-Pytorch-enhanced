@@ -10,27 +10,28 @@ import sys
 import os
 import argparse
 import statistics
-
+from sys import argv
 import ctypes
 
 # START
-""" UNCOMMENT
-sb = ctypes.create_string_buffer
-r = b"/home/jakob/experiment/OpenCRF/HardcodedPotentials/bar/rawdata/"
-ll = ctypes.cdll.LoadLibrary
-lib = ll('../../experiment/OpenCRF/HardcodedPotentials/crflib.so')
-lib.InitializeCRF.argtypes = [ctypes.c_char_p for i in range(5)]
-lib.InitializeCRF.restype = ctypes.c_void_p
-lib.Gradient.argtypes = [ctypes.c_void_p] + [ctypes.POINTER(ctypes.c_double) for i in range(6)] + [ctypes.c_int]
-lib.Gradient.restype = None
-"""
+lib = None
+if argv[-1] == "--use_crf=true":
+        sb = ctypes.create_string_buffer
+        r = b"/home/jakob/experiment/OpenCRF/HardcodedPotentials/bar/rawdata/"
+        ll = ctypes.cdll.LoadLibrary
+        lib = ll('../../experiment/OpenCRF/HardcodedPotentials/crflib.so')
+        lib.InitializeCRF.argtypes = [ctypes.c_char_p for i in range(5)]
+        lib.InitializeCRF.restype = ctypes.c_void_p
+        lib.Gradient.argtypes = [ctypes.c_void_p] + [ctypes.POINTER(ctypes.c_double) for i in range(6)] + [ctypes.c_int]
+        lib.Gradient.restype = None
 # END
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_name', type=str, default='pcnn_att', help='name of the model')
+parser.add_argument('--model_name', type=str, default='pcnn_ave', help='name of the model')
 parser.add_argument('--max_epoch', type=int, default=30, help='number of epochs to run for')
 parser.add_argument('--k_folds', type=int, default=10, help='number of folds to split the data into')
+parser.add_argument('--use_crf', type=bool, default=False, help='whether or not to use CRF')
 args = parser.parse_args()
 model = {
 	'pcnn_att': models.PCNN_ATT,
@@ -67,7 +68,7 @@ for k in range(k_folds):
 	con.load_k_fold_test_data(k)
 	con.set_train_model(model[args.model_name])
 	#con.set_test_model(model[args.model_name])
-	roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, scores, ks = con.train_each_fold(k)#, lib) UNCOMMENT
+	roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, scores, ks = con.train_each_fold(k, lib) #UNCOMMENT
 	roc_auc_all.append(roc_auc)
 	pr_auc_all.append(pr_auc)
 	#print(scores)

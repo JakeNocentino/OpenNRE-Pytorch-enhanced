@@ -24,11 +24,9 @@ from networks.classifier import *
 hgrad = np.load('hgrad3.npy')
 wgrad = np.load('wgrad3.npy')
 
-""" UNCOMMENT
 as_p = lambda a:ctypes.cast(a.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double))
 sb = ctypes.create_string_buffer 
 r = b"/home/jakob/experiment/rawdata/"
-"""
 def to_var(x):
 	#return Variable(torch.from_numpy(x).cuda()) JN EDIT. CHANGE LATER
 	return Variable(torch.from_numpy(x))
@@ -85,7 +83,7 @@ class Config(object):
 		self.pretrain_model = self.checkpoint_dir + '/PCNN_AVE-28'
 		self.trainModel = None
 		self.testModel = None
-		self.batch_size = 1 # try lower batch size for higher AUC; normally 160
+		self.batch_size = 7402 # try lower batch size for higher AUC; normally 160
 		self.current_batch = 0 # used to keep track of current batch number
 		self.word_size = 50
 		self.current_h = None # for later use
@@ -526,7 +524,7 @@ class Config(object):
 
 		self.total_recall = self.data_test_label[:, 1:].sum()
 
-	def format_gradients(hgrad, wgrad):
+	def format_gradients(self, hgrad, wgrad):
 		# hgrad formatting
 		K_CONST = 768
 		N_CONST = 7402
@@ -539,15 +537,15 @@ class Config(object):
 				h_row.append(hgrad[(n * K_CONST) + k])
 			hgrad_new.append(h_row)
 
-		h_grad_numpy = numpy.array(h_row)
-		h_grad_tensor = torch.from_numpy(h_grad_numpy).unsqueeze_(0).float()
+		h_grad_numpy = numpy.array(hgrad_new)
+		h_grad_tensor = torch.from_numpy(h_grad_numpy).float()
 
 		# wgrad formatting
 		w_grad_new = []
 		for i in range(2):
 			l = []
 			for j in range(i, len(wgrad), 2):
-				l.append(w_grad[j])
+				l.append(wgrad[j])
 			#w_grad_new.insert(0, l)
 			w_grad_new.append(l)
 
@@ -559,20 +557,17 @@ class Config(object):
 
 
 	# The method used to train the model for k-fold cross validation, as opposed to the regular train or test methods.
-	def train_each_fold(self, k):#, lib):
+	def train_each_fold(self, k, lib):
 		# CRF MODEL
 		#unspeakable evil
-
-		""" UNCOMMENT
-		nums = [b"0",b"1",b"2",b"3",b"4",b"5",b"6",b"7",b"8",b"9"]
-		param1 = sb(b"0.001")
-		param2 = sb(r+b"fold-"+nums[k]+b"-edges-ALT.txt")
-		param3 = sb(r+b"CRFmodel-"+nums[k]+b".txt")
-		param4 = sb(b"model-fold-"+nums[k]+b".txt")
-		param5 = sb(r+b"maps/map"+nums[k]+b".txt")
-		model_crf = lib.InitializeCRF(param1,param2,param3,param4,param5)
-		"""
-		
+		if lib:
+			nums = [b"0",b"1",b"2",b"3",b"4",b"5",b"6",b"7",b"8",b"9"]
+			param1 = sb(b"0.001")
+			param2 = sb(r+b"fold-"+nums[k]+b"-edges-ALT.txt")
+			param3 = sb(r+b"CRFmodel-"+nums[k]+b".txt")
+			param4 = sb(b"model-fold-"+nums[k]+b".txt")
+			param5 = sb(r+b"maps/map"+nums[k]+b".txt")
+			model_crf = lib.InitializeCRF(param1,param2,param3,param4,param5)
 
 		best_pr_auc = 0.0
 		best_roc_auc = 0.0
@@ -644,25 +639,19 @@ class Config(object):
 				total_logits = train_epoch_logits + test_h_w_logits[2]
 
 				# CRF CODE
-				""" UNCOMMENT
-				as_p = lambda a:ctypes.cast(a.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double))
-				h = np.concatenate(total_h,axis=0).astype("float64");
-				w = np.concatenate(train_epoch_w,axis=0).astype("float64");
-				l = np.concatenate(total_logits,axis=0).astype("float64");
-				l2 = np.concatenate(test_h_w_logits[1],axis=0).astype("float64")
-				hgradient = np.zeros(h.shape)
-				wgradient = np.zeros(w.shape)
-				lib.Gradient(model_crf, as_p(hgradient), as_p(h), as_p(wgradient), as_p(w), as_p(l), as_p(l2), 768)
-				"""
-				#print(hgradient.tolist())
-				#print(wgradient.tolist());exit(0)
-				# END CRF CODE AND USE GRADIENTS TO BACKPROPAGATE
-
-				h_grad_tensor, w_grad_tensor = format_gradients(hgradient, wgradient)
-				self.current_h.backward(hgradient)
-				for name, param in self.trainModel.named_parameters():
-					if name == 'selector.relation_matrix.weight':
-						param.grad = w_grad_tensor
+				if lib:
+					h = np.concatenate(total_h,axis=0).astype("float64");
+					w = np.concatenate(train_epoch_w,axis=0).astype("float64");
+					l = np.concatenate(total_logits,axis=0).astype("float64");
+					l2 = np.concatenate(test_h_w_logits[1],axis=0).astype("float64")
+					hgradient = np.zeros(h.shape)
+					wgradient = np.zeros(w.shape)
+					lib.Gradient(model_crf, as_p(hgradient), as_p(h), as_p(wgradient), as_p(w), as_p(l), as_p(l2), 768)
+					h_grad_tensor, w_grad_tensor = self.format_gradients(hgradient, wgradient)
+					self.current_h.backward(h_grad_tensor)
+					for name, param in self.trainModel.named_parameters():
+						if name == 'selector.relation_matrix.weight':
+							param.grad = w_grad_tensor
 
 				self.optimizer.step()
 
