@@ -88,6 +88,7 @@ class Config(object):
 		self.batch_size = 1 # try lower batch size for higher AUC; normally 160
 		self.current_batch = 0 # used to keep track of current batch number
 		self.word_size = 50
+		self.current_h = None # for later use
 		self.window_size = 3
 		self.epoch_range = None
 		self.num_lstm_layers = 1 # number of LSTMS stacked on top of each other
@@ -239,7 +240,7 @@ class Config(object):
 	This function does not backpropagate; that is handled by train_one_step_part2.
 	"""
 
-	def train_one_step_part1(self, hgrad):
+	def train_one_step_no_backprop(self):
 		self.trainModel.embedding.word = to_var(self.batch_word)#.retain_grad()
 		self.trainModel.embedding.pos1 = to_var(self.batch_pos1)#.retain_grad()
 		self.trainModel.embedding.pos2 = to_var(self.batch_pos2)#.retain_grad()
@@ -252,31 +253,14 @@ class Config(object):
 		#self.optimizer.zero_grad()
 		(loss, _output), training_scores, h_w_logits, h = self.trainModel()
 
-
-		# h_grad formatting
-		K_CONST = 768
-		N_CONST = 7402
-		N_TRAIN_CONST = 6661
-
-		hgrad_new = []
-		#for n in range(N_TRAIN_CONST):
-		#	h_row = []
-		#	for k in range(K_CONST):
-		#		h_row.append(hgrad[(n * K_CONST) + k])
-		#	hgrad_new.append(h_row)
-		h_row = []
-		for k in range(K_CONST):
-			h_row.append(hgrad[self.current_batch * K_CONST + k])
-
-		h_grad_numpy = numpy.array(h_row)
-		h_grad_tensor = torch.from_numpy(h_grad_numpy).unsqueeze_(0).float()
+		self.current_h = h
 
 		# print(h_grad_numpy)
 
 		# loss.backward()
 
 		# experimental backward()
-		h.backward(gradient=h_grad_tensor)
+		# h.backward(gradient=h_grad_tensor)
 
 		# Displaying
 		#for name, param in self.trainModel.named_parameters():
@@ -297,20 +281,8 @@ class Config(object):
 	calculated by the conditional random field.
 	"""
 
-	def train_one_step_part2(self, w_grad, loss):
-		# format w properly into 2 x K numpy array
-		#print(w_grad)
-		w_grad_new = []
-		for i in range(2):
-			l = []
-			for j in range(i, len(w_grad), 2):
-				l.append(w_grad[j])
-			#w_grad_new.insert(0, l)
-			w_grad_new.append(l)
+	#def train_one_step_part2(self, loss):
 
-		# replace w gradient with new gradient calculated
-		w_grad_numpy = np.array(w_grad_new)
-		w_grad_tensor = torch.from_numpy(w_grad_numpy).float()
 
 		# Displaying
 		#for name, param in self.trainModel.named_parameters():
@@ -323,15 +295,15 @@ class Config(object):
 
 		#nn.utils.clip_grad_norm_(self.trainModel.parameters(), 0.25)
 
-		for name, param in self.trainModel.named_parameters():
-			if name == 'selector.relation_matrix.weight':
-				param.grad = w_grad_tensor
+	#	for name, param in self.trainModel.named_parameters():
+	#		if name == 'selector.relation_matrix.weight':
+	#			param.grad = w_grad_tensor
 
 
 		# Displaying
-		for name, param in self.trainModel.named_parameters():
-			print('\n\n')
-			print(f"{name}\ndata: {param.data}\nrequires_grad: {param.requires_grad}\ngrad: {param.grad}\ngrad_fn: {param.grad_fn}\nis_leaf: {param.is_leaf}\nshape: {param.shape}")
+	#	for name, param in self.trainModel.named_parameters():
+	#		print('\n\n')
+	#		print(f"{name}\ndata: {param.data}\nrequires_grad: {param.requires_grad}\ngrad: {param.grad}\ngrad_fn: {param.grad_fn}\nis_leaf: {param.is_leaf}\nshape: {param.shape}")
 
 		#self.optimizer.step()
 
@@ -554,6 +526,37 @@ class Config(object):
 
 		self.total_recall = self.data_test_label[:, 1:].sum()
 
+	def format_gradients(hgrad, wgrad):
+		# hgrad formatting
+		K_CONST = 768
+		N_CONST = 7402
+		N_TRAIN_CONST = 6661
+
+		hgrad_new = []
+		for n in range(N_TRAIN_CONST):
+			h_row = []
+			for k in range(K_CONST):
+				h_row.append(hgrad[(n * K_CONST) + k])
+			hgrad_new.append(h_row)
+
+		h_grad_numpy = numpy.array(h_row)
+		h_grad_tensor = torch.from_numpy(h_grad_numpy).unsqueeze_(0).float()
+
+		# wgrad formatting
+		w_grad_new = []
+		for i in range(2):
+			l = []
+			for j in range(i, len(wgrad), 2):
+				l.append(w_grad[j])
+			#w_grad_new.insert(0, l)
+			w_grad_new.append(l)
+
+		# replace w gradient with new gradient calculated
+		w_grad_numpy = np.array(w_grad_new)
+		w_grad_tensor = torch.from_numpy(w_grad_numpy).float()
+
+		return h_grad_tensor, w_grad_tensor
+
 
 	# The method used to train the model for k-fold cross validation, as opposed to the regular train or test methods.
 	def train_each_fold(self, k):#, lib):
@@ -612,7 +615,7 @@ class Config(object):
 				# TRAINING PORTION
 
 				self.get_train_batch(batch)
-				(loss, _output), train_batch_score, train_h_w_logits = self.train_one_step_part1(hgrad)
+				(loss, _output), train_batch_score, train_h_w_logits = self.train_one_step_no_backprop()
 				#loss, train_batch_score= self.train_one_step_original()
 				train_epoch_h += train_h_w_logits[0]
 				train_epoch_w += train_h_w_logits[1]
@@ -623,7 +626,7 @@ class Config(object):
 				sys.stdout.flush()
 
 				# use gradients to backpropagate
-				self.train_one_step_part2(wgrad.astype('float32'), loss)
+				# self.train_one_step_part2(wgrad.astype('float32'), loss)
 
 				if self.current_batch == 6660:
 					self.optimizer.step()
@@ -638,6 +641,7 @@ class Config(object):
 				total_h = train_epoch_h + test_h_w_logits[0]
 				total_w = train_epoch_w + test_h_w_logits[1]
 				total_logits = train_epoch_logits + test_h_w_logits[2]
+
 				# CRF CODE
 				""" UNCOMMENT
 				as_p = lambda a:ctypes.cast(a.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double))
@@ -652,6 +656,15 @@ class Config(object):
 				#print(hgradient.tolist())
 				#print(wgradient.tolist());exit(0)
 				# END CRF CODE AND USE GRADIENTS TO BACKPROPAGATE
+
+				h_grad_tensor, w_grad_tensor = format_gradients(hgradient, wgradient)
+				self.current_h.backward(hgradient)
+				for name, param in self.trainModel.named_parameters():
+					if name == 'selector.relation_matrix.weight':
+						param.grad = w_grad_tensor
+
+				self.optimizer.step()
+
 
 				if roc_auc > best_roc_auc:
 					best_pr_auc = pr_auc
