@@ -1,0 +1,5 @@
+1) CRFModel.* -- contains methods and data structures for loading data and prexisting models and training the CRF. The CNF gradient code also lives here.
+2) FactorGraph.* -- contains methods and data structures for the graph of the CRF. Belief propagation is done here. These files have been modified to a) dump marginals to a text file and b) use hardcoded potentials
+3) DataSet.* -- same as out of the box OpenCRF. Methods and data structures for handling the raw data.
+4) Init.cpp -- interface for neural network code to initialize the CRF (created by me)
+5) All other files should be self explanatory. Do make for standalone CRF and make shared to make a .so file for the CNF. Detailed running instruction can be found in the readme.
