@@ -4,4 +4,7 @@ This file holds a description of the main files in this repository and what they
 
 2.) k_fold_train_test.py - this file is the file that utilizes Config.py to create the neural network environment. This is the main file that you call when running the neural network, e.g., 'python k_fold_train_test.py --model_name=pcnn_ave'
 
-3.) 
+3.) models/Model.py - this is the file that acts as the model template for all neural network models. It also returns the h and w to use for the CRF.
+
+4.) networks/*.py - these files are the inner working mechanisms for the neural network. embedding.py performs all the word and position embeddings, encoder.py performs the piecewise pooling operation, selector.py then gets the logits to be used in classifier.py.
+
