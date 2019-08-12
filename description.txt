@@ -1,0 +1,7 @@
+This file holds a description of the main files in this repository and what they do.
+
+1.) config/Config.py - this file is essentially the main file for the neural network. This file is the one that calls backward in the 'train_one_step_no_backprop' function. The main function in this file is the 'train_each_fold' method, which is an iteration of training that is called for each fold. In the code block of 'if lib:' is where the crf gradient calculations for h and w come into play.
+
+2.) k_fold_train_test.py - this file is the file that utilizes Config.py to create the neural network environment. This is the main file that you call when running the neural network, e.g., 'python k_fold_train_test.py --model_name=pcnn_ave'
+
+3.) 

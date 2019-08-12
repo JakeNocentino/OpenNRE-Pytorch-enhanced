@@ -13,6 +13,8 @@ class Classifier(nn.Module):
 		self.loss = nn.NLLLoss()
 		
 	def forward(self, logits):
+		logits = F.log_softmax(logits)
 		loss = self.loss(logits, self.label)
 		_, output = torch.max(logits, dim = 1)
+		#print(output)
 		return loss, output.data

@@ -176,13 +176,6 @@ void CRFModel::Train()
 	delete[] gradient;
 }
 
-extern "C"{
-void softmax(double* nums,int y){
-	for(int i = 0; i < y; i++){
-		
-	}
-}
-
 void SetPriors(void* model, double* h, double* w, double* l, int G, int labels){
 	CRFModel* crfmodel = (CRFModel*)model;
 	DataSample* sample = crfmodel->train_data->sample[0];
@@ -214,7 +207,7 @@ void SetPriors(void* model, double* h, double* w, double* l, int G, int labels){
 }
 
 
-extern "C"
+extern "C"{
 void Gradient(void* model, double* hgradient, double* h, double* wgradient, double* w, double* l, double* l2, int G){
 	CRFModel* crfmodel = (CRFModel*)model;
 	DataSample* sample = crfmodel->train_data->sample[0];
@@ -227,12 +220,11 @@ void Gradient(void* model, double* hgradient, double* h, double* wgradient, doub
 	SetPriors(model,h,w,l,G,1);
 	(crfmodel->sample_factor_graph[0]).BeliefPropagation(crfmodel->conf->max_infer_iter);
 	(crfmodel->sample_factor_graph[0]).CalculateMarginal();
-
 	for(int g = 0; g < G; g++){
 		for(int n = 0; n < N; n++){
 			for(int y = 0; y < Y; y++){
-				hgradient[G*n+g] += w[g*Y+y]*h[G*n+g]*factor_graph->var_node[n].marginal[y];
-				wgradient[g*Y+y] += (crfmodel->sample_factor_graph[0]).var_node[n].marginal[y]*h[G*n+g];
+				wgradient[g*Y+y] += (crfmodel->sample_factor_graph[0]).var_node[n].marginal[y]*h[G*n+g]/(double)N;
+				hgradient[n*G+g] += (crfmodel->sample_factor_graph[0]).var_node[n].marginal[y]*w[g*Y+y];
 			}
 		}
 	}
@@ -241,15 +233,38 @@ void Gradient(void* model, double* hgradient, double* h, double* wgradient, doub
 	SetPriors(model,h,w,l,G,0);
 	(crfmodel->sample_factor_graph[0]).BeliefPropagation(crfmodel->conf->max_infer_iter);
 	(crfmodel->sample_factor_graph[0]).CalculateMarginal();
-
 	for(int g = 0; g < G; g++){
 		for(int n = 0; n < N; n++){
 			for(int y = 0; y < Y; y++){
-				hgradient[G*n+g] -= w[g*Y+y]*h[G*n+g]*factor_graph->var_node[n].marginal[y];
-				wgradient[g*Y+y] -= (crfmodel->sample_factor_graph[0]).var_node[n].marginal[y]*h[G*n+g];
+				wgradient[g*Y+y] -= (crfmodel->sample_factor_graph[0]).var_node[n].marginal[y]*h[G*n+g]/(double)N;
+				hgradient[n*G+g] -= (crfmodel->sample_factor_graph[0]).var_node[n].marginal[y]*w[g*Y+y];
 			}
 		}
 	}
+	/*
+	for(int n = 0; n < N; g++){
+		double hs = 0.0;
+		double ws = 0.0;
+		for(int g = 0; g < G; n++){
+			hs += hgradient[G*n
+		}
+	}*/
+	/*
+	double wgnorm = 0.0;
+	double hgnorm = 0.0;
+	for(int i = 0; i < G*N; i++){
+		hgnorm += hgradient[i]*hgradient[i];
+	}
+	for(int i = 0; i < G*N; i++){
+		hgradient[i] /= hgnorm;
+	}
+	for(int i = 0; i < G*Y; i++){
+		wgnorm += wgradient[i]*wgradient[i];
+	}
+	for(int i = 0; i < G*Y; i++){
+		wgradient[i] /= wgnorm;
+	}
+	fprintf(stderr, "wg norm %f hg norm %f\n", wgnorm, hgnorm);*/
 	return;
 }
 }

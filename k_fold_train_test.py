@@ -13,7 +13,7 @@ import statistics
 from sys import argv
 import ctypes
 
-# START
+# START CRF INITIALIZATION STUFF
 lib = None
 if argv[-1] == "--use_crf=true":
         sb = ctypes.create_string_buffer
@@ -24,7 +24,7 @@ if argv[-1] == "--use_crf=true":
         lib.InitializeCRF.restype = ctypes.c_void_p
         lib.Gradient.argtypes = [ctypes.c_void_p] + [ctypes.POINTER(ctypes.c_double) for i in range(6)] + [ctypes.c_int]
         lib.Gradient.restype = None
-# END
+# END CRF INITIALIZATION STUFF
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 parser = argparse.ArgumentParser()
@@ -67,15 +67,15 @@ for k in range(k_folds):
 	con.load_k_fold_train_data(k)
 	con.load_k_fold_test_data(k)
 	con.set_train_model(model[args.model_name])
-	#con.set_test_model(model[args.model_name])
-	roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, scores, ks = con.train_each_fold(k, lib) #UNCOMMENT
+	con.set_test_model(model[args.model_name])
+	roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, scores = con.train_each_fold(k)
 	roc_auc_all.append(roc_auc)
 	pr_auc_all.append(pr_auc)
 	#print(scores)
 	#print("^^ SCORES ^^")
 
-	np.save('./raw_data/jake/fold{}/scores'.format(k), scores)
-	print("Probability scores for fold {} saved to 'scores.npy' in fold {} folder.".format(k, k))
+	#np.save('./raw_data/jake/fold{}/scores'.format(k), scores)
+	#print("Probability scores for fold {} saved to 'scores.npy' in fold {} folder.".format(k, k))
 
 	"""
 	if k == 0:

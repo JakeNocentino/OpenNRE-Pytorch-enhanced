@@ -70,7 +70,7 @@ class Config(object):
 		self.max_epoch = 50
 		self.opt_method = 'SGD'
 		self.optimizer = None
-		self.learning_rate = 0.01 # normally .5 or .9
+		self.learning_rate = 0.9 # normally .5 or .9
 		self.weight_decay = 1e-5
 		self.drop_prob = 0.25 # DEFAULT: 0.5
 		self.checkpoint_dir = './checkpoint'
@@ -80,7 +80,7 @@ class Config(object):
 		self.save = False
 		self.test_epoch = 1
 		self.test_k_fold = 1 # test and store auc of all k-folds at an iteration of 1
-		self.pretrain_model = self.checkpoint_dir + '/PCNN_AVE-28'
+		self.pretrain_model = self.checkpoint_dir + '/PCNN_AVE-2'
 		self.trainModel = None
 		self.testModel = None
 		self.batch_size = 7402 # try lower batch size for higher AUC; normally 160
@@ -248,17 +248,25 @@ class Config(object):
 			self.trainModel.selector.attention_query = to_var(self.batch_attention_query)
 		self.trainModel.selector.label = to_var(self.batch_label)#.retain_grad()
 		self.trainModel.classifier.label = to_var(self.batch_label)#.retain_grad()
-		#self.optimizer.zero_grad()
+		self.optimizer.zero_grad()
 		(loss, _output), training_scores, h_w_logits, h = self.trainModel()
 
 		self.current_h = h
 
 		# print(h_grad_numpy)
 
-		# loss.backward()
+		#loss.backward()
+		#self.optimizer.step()
 
 		# experimental backward()
-		# h.backward(gradient=h_grad_tensor)
+		h_grad_tensor, w_grad_tensor = self.format_gradients(hgrad, wgrad)
+		h.backward(gradient=h_grad_tensor)
+
+		for name, param in self.trainModel.named_parameters():
+			if name == 'selector.relation_matrix.weight':
+				param.grad = w_grad_tensor
+
+		self.optimizer.step()
 
 		# Displaying
 		#for name, param in self.trainModel.named_parameters():
@@ -273,37 +281,7 @@ class Config(object):
 			self.acc_total.add(prediction == self.batch_label[i])
 
 		return (loss, _output), training_scores, h_w_logits
-
-	"""
-	This function takes care of backpropagation using the w and h gradients
-	calculated by the conditional random field.
-	"""
-
-	#def train_one_step_part2(self, loss):
-
-
-		# Displaying
-		#for name, param in self.trainModel.named_parameters():
-		#	print('\n\n')
-		#	print(f"{name}\ndata: {param.data}\nrequires_grad: {param.requires_grad}\ngrad: {param.grad}\ngrad_fn: {param.grad_fn}\nis_leaf: {param.is_leaf}\nshape: {param.shape}")
-
-		# loss.backward()
-
-		# params = self.trainModel.state_dict()
-
-		#nn.utils.clip_grad_norm_(self.trainModel.parameters(), 0.25)
-
-	#	for name, param in self.trainModel.named_parameters():
-	#		if name == 'selector.relation_matrix.weight':
-	#			param.grad = w_grad_tensor
-
-
-		# Displaying
-	#	for name, param in self.trainModel.named_parameters():
-	#		print('\n\n')
-	#		print(f"{name}\ndata: {param.data}\nrequires_grad: {param.requires_grad}\ngrad: {param.grad}\ngrad_fn: {param.grad_fn}\nis_leaf: {param.is_leaf}\nshape: {param.shape}")
-
-		#self.optimizer.step()
+		
 
 	"""
 	def train_one_step_original(self):
@@ -340,64 +318,6 @@ class Config(object):
 		self.testModel.encoder.mask = to_var(self.batch_mask)
 		self.testModel.selector.scope = self.batch_scope
 		return self.testModel.test()
-
-
-	def train(self):
-		if not os.path.exists(self.checkpoint_dir):
-			os.mkdir(self.checkpoint_dir)
-		best_pr_auc = 0.0
-		best_roc_auc = 0.0
-		best_p = None
-		best_r = None
-		best_fpr = None
-		best_tpr = None
-		best_epoch = 0
-		best_scores = []
-		for epoch in range(self.max_epoch):
-			print('Epoch ' + str(epoch) + ' starts...')
-			self.acc_NA.clear()
-			self.acc_not_NA.clear()
-			self.acc_total.clear()
-			np.random.shuffle(self.train_order)
-			print(self.train_batches)
-			for batch in range(self.train_batches):
-				self.get_train_batch(batch)
-				loss, train_score = self.train_one_step()#NEW
-				time_str = datetime.datetime.now().isoformat()
-				sys.stdout.write("epoch %d step %d time %s | loss: %f, negative (NA) accuracy: %f, positive (NOT NA) accuracy: %f, total accuracy: %f\r" % (epoch, batch, time_str, loss, self.acc_NA.get(), self.acc_not_NA.get(), self.acc_total.get()))	
-				sys.stdout.flush()
-			if (epoch + 1) % self.save_epoch == 0:
-				print('Epoch ' + str(epoch) + ' has finished')
-				print('Saving model...')
-				path = os.path.join(self.checkpoint_dir, self.model.__name__ + '-' + str(epoch))
-				torch.save(self.trainModel.state_dict(), path)
-				print('Have saved model to ' + path)
-			if (epoch + 1) % self.test_epoch == 0:
-				self.testModel = self.trainModel
-				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, _ = self.test_one_epoch()
-				if roc_auc > best_roc_auc:
-					best_roc_auc = roc_auc
-					best_fpr = fpr
-					best_tpr = tpr
-					best_pr_auc = pr_auc
-					best_p = pr_x
-					best_r = pr_y
-					# best_scores = scores
-					best_epoch = epoch
-
-		# Do one last step of Batch Gradient Descent to gather scores
-
-		print("Finish training")
-		print("Best epoch = %d | pr_auc = %f | roc_auc = %f" % (best_epoch, best_pr_auc, roc_auc))
-		print("Storing best result...")
-		if not os.path.isdir(self.test_result_dir):
-			os.mkdir(self.test_result_dir)
-		np.save(os.path.join(self.test_result_dir + '/pr_auc', self.model.__name__ + '_pr_x.npy'), best_p)
-		np.save(os.path.join(self.test_result_dir + '/pr_auc', self.model.__name__ + '_pr_y.npy'), best_r)
-		np.save(os.path.join(self.test_result_dir + '/roc_auc', self.model.__name__ + '_roc_x.npy'), best_fpr)
-		np.save(os.path.join(self.test_result_dir + '/roc_auc', self.model.__name__ + '_roc_y.npy'), best_tpr)
-
-		print("Finish storing")
 
 	def test_one_epoch(self):
 		test_score = []
@@ -440,43 +360,6 @@ class Config(object):
 		print("ROC-AUC: ", roc_auc)
 
 		return roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, (test_h, test_w, test_logits)
-
-	def test(self):
-		best_epoch = None
-		best_pr_auc = 0.0
-		best_roc_auc = 0.0
-		best_p = None
-		best_r = None
-		best_fpr = None
-		best_tpr = None
-		best_scores = []
-		for epoch in self.epoch_range:
-			path = os.path.join(self.checkpoint_dir, self.model.__name__ + '-' + str(epoch))
-			if not os.path.exists(path):
-				continue
-			print("Start testing epoch %d" % (epoch))
-			self.testModel.load_state_dict(torch.load(path))
-			roc_auc, pr_auc, p, r, fpr, tpr, scores = self.test_one_epoch()
-			if roc_auc > best_roc_auc:
-				best_roc_auc = roc_auc
-				best_fpr = fpr
-				best_tpr = tpr
-				best_pr_auc = pr_auc
-				best_p = p
-				best_r = r
-				best_scores = scores
-				best_epoch = epoch
-			print("Finish testing epoch %d" % (epoch))
-		print("Best epoch = %d | pr_auc = %f | roc_auc = %f" % (best_epoch, best_pr_auc, best_roc_auc))
-		print("Storing best result...")
-		if not os.path.isdir(self.test_result_dir):
-			os.mkdir(self.test_result_dir)
-		np.save(os.path.join(self.test_result_dir + '/pr_auc', self.model.__name__ + '_pr_x.npy'), best_p)
-		np.save(os.path.join(self.test_result_dir + '/pr_auc', self.model.__name__ + '_pr_y.npy'), best_r)
-		np.save(os.path.join(self.test_result_dir + '/roc_auc', self.model.__name__ + '_roc_x.npy'), best_fpr)
-		np.save(os.path.join(self.test_result_dir + '/roc_auc', self.model.__name__ + '_roc_y.npy'), best_tpr)
-		# SHOULD DO SOMETHING WITH SCORES HERE
-		print("Finish storing")
 
 
 	"""
@@ -557,7 +440,7 @@ class Config(object):
 
 
 	# The method used to train the model for k-fold cross validation, as opposed to the regular train or test methods.
-	def train_each_fold(self, k, lib):
+	def train_each_fold(self, k, lib=None):
 		# CRF MODEL
 		#unspeakable evil
 		if lib:
@@ -632,7 +515,7 @@ class Config(object):
 				# If you want to test your model OLD! IGNORE for now
 			if (epoch + 1) % self.test_epoch == 0:
 				self.testModel = self.trainModel
-				_, _, _, _, _, _, _, test_h_w_logits = self.test_one_epoch()
+				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_h_w_logits = self.test_one_epoch()
 				#print(scores);scores = np.concatenate(scores,axis=0)
 				total_h = train_epoch_h + test_h_w_logits[0]
 				total_w = train_epoch_w + test_h_w_logits[1]
@@ -652,12 +535,15 @@ class Config(object):
 					for name, param in self.trainModel.named_parameters():
 						if name == 'selector.relation_matrix.weight':
 							param.grad = w_grad_tensor
+					self.optimizer.step()
 
-				self.optimizer.step()
-
-				roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, _ = self.test_one_epoch()
+				# roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, _ = self.test_one_epoch()
 
 				total_score = train_epoch_score + test_score
+
+				#result_path = self.test_result_dir + 'fold{}'.format(k)
+				#with open(result_path, 'w') as result_file:
+				#	result_file.writelines(total_score)
 
 
 				if roc_auc > best_roc_auc:
@@ -679,80 +565,8 @@ class Config(object):
 				torch.save(self.trainModel.state_dict(), path)
 				print('Have saved model to ' + path)
 
-			# If you want to test your model OLD! IGNORE for now
-			#if (epoch + 1) % self.test_epoch == 0:
-				#self.testModel = self.trainModel
-				#roc_auc, pr_auc, pr_x, pr_y, fpr, tpr, test_score, test_h_w_logits = self.test_one_epoch()
-				#print(scores);scores = np.concatenate(scores,axis=0)
-				#total_score = train_epoch_score + test_score
-				#total_h = train_epoch_h + test_h_w_logits[0]
-				#total_w = train_epoch_w + test_h_w_logits[1]
-				#total_logits = train_epoch_logits + test_h_w_logits[2]
-				# CRF CODE
-				#as_p = lambda a:ctypes.cast(a.__array_interface__['data'][0],ctypes.POINTER(ctypes.c_double))
-				#h = np.concatenate(total_h,axis=0).astype("float64");
-				#w = np.concatenate(train_epoch_w,axis=0).astype("float64");
-				#l = np.concatenate(total_logits,axis=0).astype("float64");
-				#l2 = np.concatenate(test_h_w_logits[1],axis=0).astype("float64")
-				#hgradient = np.zeros(h.shape)
-				#wgradient = np.zeros(w.shape)
-				#lib.Gradient(model_crf, as_p(hgradient), as_p(h), as_p(wgradient), as_p(w), as_p(l), as_p(l2), 768) UNCOMMENT
-				#print(hgradient.tolist())
-				#print(wgradient.tolist());exit(0)
-
-				# END CRF CODE AND USE GRADIENTS TO BACKPROPAGATE
-				# self.train_one_step_part2(hgrad.astype('float32'), wgrad.astype('float32'), loss_output[0])
-
-				#if roc_auc > best_roc_auc:
-					#best_pr_auc = pr_auc
-					#best_roc_auc = roc_auc
-					#best_p = pr_x
-					#best_r = pr_y
-					#best_fpr = fpr
-					#best_tpr = tpr
-					#best_train_score = train_epoch_score
-					#best_test_score = test_score
-					#best_epoch = epoch
 		best_total_score = best_train_score.extend(best_test_score)
 		print("Finish training")
 		print("Best epoch = {} | pr_auc = {} | roc_auc = {}".format(best_epoch, best_pr_auc, roc_auc))
 
 		return best_roc_auc, best_pr_auc, best_p, best_r, best_fpr, best_tpr, best_total_score
-
-
-
-		"""for epoch in range(self.max_epoch):
-			print('Epoch ' + str(epoch) + ' starts...')
-			self.acc_NA.clear()
-			self.acc_not_NA.clear()
-			self.acc_total.clear()
-			np.random.shuffle(self.train_order)
-			print(self.train_batches)
-			for batch in range(self.train_batches):
-				self.get_train_batch(batch)
-				loss = self.train_one_step()
-				time_str = datetime.datetime.now().isoformat()
-				sys.stdout.write("epoch %d step %d time %s | loss: %f, NA accuracy: %f, not NA accuracy: %f, total accuracy: %f\r" % (epoch, batch, time_str, loss, self.acc_NA.get(), self.acc_not_NA.get(), self.acc_total.get()))	
-				sys.stdout.flush()
-			if (epoch + 1) % self.save_epoch == 0:
-				print('Epoch ' + str(epoch) + ' has finished')
-				print('Saving model...')
-				path = os.path.join(self.checkpoint_dir, self.model.__name__ + '-' + str(epoch))
-				torch.save(self.trainModel.state_dict(), path)
-				print('Have saved model to ' + path)
-			if (epoch + 1) % self.test_epoch == 0:
-				self.testModel = self.trainModel
-				auc, pr_x, pr_y = self.test_one_epoch()
-				if auc > best_auc:
-					best_auc = auc
-					best_p = pr_x
-					best_r = pr_y
-					best_epoch = epoch
-		print("Finish training")
-		print("Best epoch = %d | auc = %f" % (best_epoch, best_auc))
-		print("Storing best result...")
-		if not os.path.isdir(self.test_result_dir):
-			os.mkdir(self.test_result_dir)
-		np.save(os.path.join(self.test_result_dir, self.model.__name__ + '_x.npy'), best_p)
-		np.save(os.path.join(self.test_result_dir, self.model.__name__ + '_y.npy'), best_r)
-		print("Finish storing")"""
